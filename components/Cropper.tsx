@@ -1,29 +1,33 @@
 import React, { useState, useCallback } from 'react'
-import Cropper from 'react-easy-crop'
+import Cropper, { Area } from 'react-easy-crop'
 
-export default function CropperImg({
+interface Media {
+  url: string
+  type: string
+  dataURL: string
+  width: number
+  height: number
+}
+
+interface CropperImgProps {
+  imageSrc: string
+  onCropComplete: (croppedAreaPixels: Area) => void
+  aspect: number
+  media: Media
+}
+
+const CropperImg: React.FC<CropperImgProps> = ({
   imageSrc,
   onCropComplete,
   aspect,
   media,
-}: {
-  imageSrc: string
-  onCropComplete: (croppedArePixels: { xy: number; y: number }) => void
-  aspect: number
-  media: {
-    url: string
-    type: string
-    dataURL: string
-    width: number
-    height: number
-  }
-}) {
-  const [crop, setCrop] = useState({ x: 0, y: 0 })
-  const [zoom, setZoom] = useState(1)
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
+}) => {
+  const [crop, setCrop] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState<number>(1)
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
 
   const handleCropComplete = useCallback(
-    (croppedArea, croppedAreaPixels) => {
+    (croppedArea: Area, croppedAreaPixels: Area) => {
       setCroppedAreaPixels(croppedAreaPixels)
       if (onCropComplete) onCropComplete(croppedAreaPixels)
     },
@@ -32,6 +36,7 @@ export default function CropperImg({
 
   const w = (media.width - 600) / 2
   const h = (media.height - 550) / 2
+
   return (
     <div className="flex justify-center items-center background-[#0e0d0d] p-0 m-0">
       {media.width > 0 && media.height > 0 ? (
@@ -39,7 +44,6 @@ export default function CropperImg({
           style={{
             position: 'relative',
             width: 600,
-
             height: 550,
             overflow: 'hidden',
           }}
@@ -77,7 +81,7 @@ export default function CropperImg({
               image={imageSrc}
               crop={crop}
               zoom={zoom}
-              aspect={aspect} // np. proporcje baneru 3:1
+              aspect={aspect}
               onCropChange={setCrop}
               onZoomChange={setZoom}
               onCropComplete={handleCropComplete}
@@ -87,16 +91,12 @@ export default function CropperImg({
                   ? media.height > media.width
                     ? 'horizontal-cover'
                     : undefined
-                  : media.width > media.height
-                  ? undefined
                   : undefined
               }
               cropSize={aspect === 1 ? { width: 500, height: 500 } : undefined}
               style={{
                 containerStyle: {
-                  backgroundColor: '#0e0d0d', // tutaj ustawiasz
-                  // kolor tła
-                  /* padding: media.width > media.height ? '2rem 0' : '0 2rem', */
+                  backgroundColor: '#0e0d0d',
                 },
                 mediaStyle: {
                   aspectRatio: media.width / media.height,
@@ -105,7 +105,7 @@ export default function CropperImg({
                       ? media.height > media.width
                         ? media.height
                         : 500
-                      : '',
+                      : undefined,
                   width:
                     aspect === 1
                       ? media.width > media.height
@@ -125,3 +125,5 @@ export default function CropperImg({
     </div>
   )
 }
+
+export default CropperImg
