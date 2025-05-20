@@ -5,8 +5,10 @@ import { SignUpFormSchema } from '@/types/schemas'
 import { z } from 'zod'
 import { comparePassword } from '../utils/bcryptUtils'
 import { signIn, signOut } from '@/auth'
+import connectionToDatabase from '../mongoose'
 
 export const signUp = async (formData: z.infer<typeof SignUpFormSchema>) => {
+  await connectionToDatabase()
   const user = SignUpFormSchema.parse({
     username: formData.username,
     email: formData.email,
@@ -43,6 +45,7 @@ export const signInWithCredentials = async (credentials: {
   email: string
   password: string
 }) => {
+  await connectionToDatabase()
   const user = await User.findOne({ email: credentials.email })
 
   if (user) {
