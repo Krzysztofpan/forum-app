@@ -92,7 +92,6 @@ export const unfollow = async (userId: string) => {
     if (alreadyFollowed) {
       return { success: false, message: 'User is already unfollowed.' }
     }
-    console.log(loggedUser.following, userToUnfollow._id)
 
     loggedUser.following = loggedUser.following.filter(
       (id: string) => String(id) !== String(userToUnfollow._id)
@@ -138,7 +137,6 @@ export const uploadUserImage = async (
     .catch((error) => {
       console.log(error)
     })) as UploadApiResponse
-  console.log('ok')
 
   if (imageType === 'avatar') {
     await User.findByIdAndUpdate(session.user.id, { avatar: res.secure_url })

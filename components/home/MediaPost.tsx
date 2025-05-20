@@ -13,8 +13,6 @@ const MediaPost = ({
     public_id: string
   }[]
 }) => {
-  console.log(media.length)
-
   return (
     <div
       className={`rounded-lg overflow-hidden ${

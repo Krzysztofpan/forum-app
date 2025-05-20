@@ -64,8 +64,6 @@ export const addPost = async (
     writeConcern: { w: 'majority' },
   })
   try {
-    console.log(repostId)
-
     const newPost = await (
       await Post.create(
         [
@@ -157,7 +155,6 @@ export const toggleRepostPost = async (postId: string) => {
   }
 
   const post = await Post.findOne({ _id: postId })
-  console.log(session.user.id, post.creator)
 
   if (String(session.user.id) === String(post.creator)) {
     return

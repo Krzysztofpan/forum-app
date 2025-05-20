@@ -95,7 +95,7 @@ const UserEditProfile = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
       // Lub przesłać croppedBlob do backendu jako plik
       setIsCrop(false)
     } catch (e) {
-      console.error(e)
+      /*  console.error(e) */
     }
   }
   const handleCropComplete = (croppedAreaPixels: {
@@ -127,7 +127,6 @@ const UserEditProfile = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
 
     return router.replace(`/${user.userAt}`)
   }
-  console.log(user.banner)
 
   return (
     <>

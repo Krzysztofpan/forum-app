@@ -36,8 +36,6 @@ const Comp = ({
   edit: 'banner' | 'avatar'
   setCroppedImageDataURL?: Dispatch<SetStateAction<string | null>>
 }) => {
-  /* const [croppedImageUrl, setCroppedImageUrl] = useState<string | null>(null) */
-
   return (
     <div className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex gap-4 ">
       <Button
@@ -55,9 +53,6 @@ const Comp = ({
             className="hidden"
             onChange={async (event: ChangeEvent<HTMLInputElement>) => {
               const files: FileList = event.target.files as FileList
-              console.log(files[0])
-
-              /* const dataURL = (await blobToDataURL(files[0])) as string */
 
               const img = new Image()
               img.onload = () => {
@@ -66,7 +61,6 @@ const Comp = ({
                 let width, height
 
                 if (img.width > img.height) {
-                  // Obraz szerszy - wysokość 600, szerokość proporcjonalna
                   height = maxHeight
                   if (aspect === 1) {
                     width = (img.width / img.height) * maxHeight
