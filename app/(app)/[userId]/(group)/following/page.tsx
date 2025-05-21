@@ -24,7 +24,7 @@ const FollowingPage = async ({
   }
   const user = await res.json()
 
-  if (!user.follow) {
+  if (!user.following) {
     return (
       <DataNotFoundInformation
         header={`@${user.userAt} isn't following anyone`}
