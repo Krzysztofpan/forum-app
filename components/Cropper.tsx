@@ -91,6 +91,8 @@ const CropperImg: React.FC<CropperImgProps> = ({
                   ? media.height > media.width
                     ? 'horizontal-cover'
                     : undefined
+                  : media.width > media.height
+                  ? 'horizontal-cover'
                   : undefined
               }
               cropSize={aspect === 1 ? { width: 500, height: 500 } : undefined}

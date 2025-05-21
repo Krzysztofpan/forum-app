@@ -35,7 +35,7 @@ const PostComponent = async ({
         <LinkWithoutPropagation href={`/${user.userAt}`} className="">
           {user.avatar ? (
             <Image
-              src={user.avatar}
+              src={user.avatar || ''}
               alt={`${user.userAt} avatar`}
               width={40}
               height={40}
