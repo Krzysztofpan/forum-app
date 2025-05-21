@@ -25,6 +25,7 @@ import Spinner from '../Spinner'
 import { PostType } from '@/models/Post'
 
 import RepostedPost from '../post/RepostedPost'
+import Image from 'next/image'
 
 export type FileType = {
   url: string
@@ -43,11 +44,13 @@ const AddPostComponent = ({
   type,
   className,
   repostPost,
+  avatar,
 }: {
   placeholder?: string
   type: 'post' | 'comment' | 'quote'
   className?: string
   repostPost?: PostType
+  avatar?: string
 }) => {
   const {
     media,
@@ -69,6 +72,7 @@ const AddPostComponent = ({
   function handleClickEmoji(emoji: EmojiClickData) {
     setContent(content + emoji.emoji)
   }
+
   const params = useParams()
   const searchParams = useSearchParams()
 
@@ -109,7 +113,17 @@ const AddPostComponent = ({
       action={handleSubmit}
     >
       <div className="mt-2 row-span-4">
-        <CgProfile className="w-full" size={40} />
+        {avatar ? (
+          <Image
+            className="w-full rounded-full"
+            src={avatar}
+            alt="user avatar"
+            width={40}
+            height={40}
+          />
+        ) : (
+          <CgProfile className="w-full" size={40} />
+        )}
       </div>
       <div className="mr-4">
         <Textarea
@@ -180,7 +194,7 @@ const AddPostComponent = ({
           >
             GIF
           </ButtonWithTooltip>
-          {!(type === 'comment') ? (
+          {/* {!(type === 'comment') ? (
             <ButtonWithTooltip
               trigger={
                 <Button
@@ -196,7 +210,7 @@ const AddPostComponent = ({
             >
               Poll
             </ButtonWithTooltip>
-          ) : null}
+          ) : null} */}
           <Popover modal>
             <PopoverTrigger>
               <ButtonWithTooltip
@@ -222,7 +236,7 @@ const AddPostComponent = ({
             </PopoverContent>
           </Popover>
 
-          {!(type === 'comment') ? (
+          {/*   {!(type === 'comment') ? (
             <ButtonWithTooltip
               trigger={
                 <Button
@@ -236,14 +250,14 @@ const AddPostComponent = ({
             >
               Schedule
             </ButtonWithTooltip>
-          ) : null}
-          <Button
+          ) : null} */}
+          {/*  <Button
             variant="ghost"
             type="button"
             className="m-0 p-0 rounded-full  "
           >
             <CiLocationOn className="text-blue-400 scale-120" />
-          </Button>
+          </Button> */}
         </div>
         <div className="flex gap-2">
           {content.length > 0 && (

@@ -73,7 +73,7 @@ const HomeNavbar = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
           <span className="hidden xl:inline">Notifications</span>
         </div>
       </Link>
-      <Link href="/profile" className="group xl:w-full cursor-pointer">
+      <Link href={`/${user.userAt}`} className="group xl:w-full cursor-pointer">
         <div
           className={`flex gap-5 text-xl items-center  px-4 py-3 hover:bg-foreground/10  rounded-full group-hover:bg-foreground/10 w-fit  ${
             path === '/profile' ? 'font-bold' : null
@@ -101,11 +101,11 @@ const HomeNavbar = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
           <span className="hidden xl:inline">Bookmarks</span>
         </div>
       </Link>
-      <Link href={'/compose/post'}>
+      {/*  <Link href={'/compose/post'}>
         <Button className="hidden xl:inline-flex w-full py-6 rounded-full text-lg mt-4 mb-8">
           Post
         </Button>
-      </Link>
+      </Link> */}
       <div className="xl:grid xl:grid-cols-[1fr_20px]">
         <div className="xl:grid xl:grid-cols-[40px_190px] xl:gap-3">
           <Image

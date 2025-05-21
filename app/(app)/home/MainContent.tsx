@@ -18,6 +18,7 @@ const MainContent = async () => {
         path: 'creator',
       },
     })
+    .limit(10)
 
   return (
     <div>

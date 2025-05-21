@@ -100,7 +100,11 @@ const PostView = async ({ post }: { post: PostType }) => {
         </div>
       </div>
       <div className="border-b-[1px] border-border">
-        <AddPostComponent type="comment" placeholder="Post your reply" />
+        <AddPostComponent
+          type="comment"
+          placeholder="Post your reply"
+          avatar={user.avatar}
+        />
       </div>
       <div>
         {post.comments.map((post) => (
