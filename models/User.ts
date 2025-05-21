@@ -1,7 +1,7 @@
 import { hashPassword } from '@/lib/utils/bcryptUtils'
 
 import mongoose from 'mongoose'
-
+import Post from './Post'
 export type userType = {
   _id: mongoose.Types.ObjectId | string
   username: string

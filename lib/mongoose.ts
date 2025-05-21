@@ -7,7 +7,7 @@ const connectionToDatabase = async () => {
       {
         maxPoolSize: 10,
         minPoolSize: 2,
-        serverSelectionTimeoutMS: 5000,
+        serverSelectionTimeoutMS: 15000,
       }
     )
     if (connection.readyState === 1) {

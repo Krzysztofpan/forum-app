@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 import connectionToDatabase from '@/lib/mongoose'
 import User from '@/models/User'
-
+import Post from '@/models/Post'
 // Obsługa metody GET
 export async function GET(
   request: Request,
