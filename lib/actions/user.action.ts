@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache'
 import { generateRandomString } from '../utils/generateRadomString'
 import cloudinary from '../cloudinary'
 import { UploadApiResponse } from 'cloudinary'
+import connectionToDatabase from '../mongoose'
 
 export const follow = async (userId: string) => {
   const session = await auth()
@@ -20,7 +21,7 @@ export const follow = async (userId: string) => {
   if (userId === session.user.id) {
     return { success: false, message: `User can't follow himself` }
   }
-
+  await connectionToDatabase()
   const mongooseSession = await mongoose.startSession()
   mongooseSession.startTransaction()
   try {
@@ -72,7 +73,7 @@ export const unfollow = async (userId: string) => {
   if (userId === session.user.id) {
     return { success: false, message: `User can't unfollow himself` }
   }
-
+  await connectionToDatabase()
   const mongooseSession = await mongoose.startSession()
   mongooseSession.startTransaction()
   try {
@@ -121,6 +122,7 @@ export const uploadUserImage = async (
   croppedImageDataURL: string,
   imageType: 'banner' | 'avatar'
 ) => {
+  await connectionToDatabase()
   const session = await auth()
   if (!session || !session.user) {
     return null

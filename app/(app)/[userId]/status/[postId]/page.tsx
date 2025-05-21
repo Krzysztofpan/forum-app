@@ -1,4 +1,5 @@
 import PostView from '@/components/post/PostView'
+import connectionToDatabase from '@/lib/mongoose'
 import { notFound } from 'next/navigation'
 
 interface PageProps {

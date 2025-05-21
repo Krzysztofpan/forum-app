@@ -16,10 +16,12 @@ import User from '@/models/User'
 import MediaPost from '../home/MediaPost'
 import Image from 'next/image'
 import RepostedPost from './RepostedPost'
+import connectionToDatabase from '@/lib/mongoose'
 
 const PostView = async ({ post }: { post: PostType }) => {
   const session = await auth()
   if (!session || !session.user) return
+  await connectionToDatabase()
   const user = await User.findById(session.user.id)
   const userId = String(session?.user.id)
   const formattedDate = format(post.createdAt, 'MMMM dd yyyy', {

@@ -10,6 +10,7 @@ import { UploadApiResponse } from 'cloudinary'
 import { revalidatePath } from 'next/cache'
 import mongoose from 'mongoose'
 import User from '@/models/User'
+import connectionToDatabase from '../mongoose'
 
 export const addPost = async (
   formData: FormData,
@@ -57,6 +58,7 @@ export const addPost = async (
     })
     convertedMedia = await Promise.all(PromisedMedia)
   }
+  await connectionToDatabase()
   const mongooseSession = await mongoose.startSession()
 
   mongooseSession.startTransaction({
@@ -150,6 +152,7 @@ export const toggleLikePost = async (postId: string) => {
 }
 export const toggleRepostPost = async (postId: string) => {
   const session = await auth()
+  await connectionToDatabase()
   if (!session || !session.user) {
     return
   }

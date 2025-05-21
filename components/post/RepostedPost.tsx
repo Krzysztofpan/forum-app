@@ -16,8 +16,6 @@ const RepostedPost = ({
     | { width: number; height: number; url: string; public_id: string }
   )[]
 }) => {
-  console.log(repostPost.creator)
-
   return (
     <Card className="py-0 px-0 mr-4 my-1">
       <CardContent className=" flex flex-col gap-1 m-0 p-0 ">
