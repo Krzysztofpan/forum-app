@@ -12,13 +12,14 @@ export async function GET(
   try {
     await connectionToDatabase()
     const userId = (await params).userId
-    //const Post = mongoose.model('Post', PostSchema)
+    const Post = mongoose.model('Post', PostSchema)
     const user = await User.findOne({ userAt: userId })
       .populate({
         path: 'posts',
-        populate: {
-          path: 'creator',
-        },
+        populate: [
+          { path: 'creator' },
+          { path: 'quotePost', populate: { path: 'creator' } },
+        ],
       })
       .populate('followers')
       .populate('following')

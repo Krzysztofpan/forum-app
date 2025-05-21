@@ -18,7 +18,10 @@ const UserPage = async ({
     return notFound()
   }
   const user = await res.json()
-  const posts = user.posts.filter((post: PostType) => post.type === 'post')
+  const posts = user.posts.filter(
+    (post: PostType) =>
+      post.type === 'post' || post.type === 'quote' || post.type === 'repost'
+  )
   return (
     <UserLayout user={user}>
       {posts.map((post: PostType) => (
