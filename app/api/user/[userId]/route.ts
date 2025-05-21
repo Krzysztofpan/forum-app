@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server'
 
 import connectionToDatabase from '@/lib/mongoose'
 import User from '@/models/User'
-import Post from '@/models/Post'
+import Post, { PostSchema } from '@/models/Post'
+import mongoose from 'mongoose'
 // Obsługa metody GET
 export async function GET(
   request: Request,
@@ -11,7 +12,7 @@ export async function GET(
   try {
     await connectionToDatabase()
     const userId = (await params).userId
-
+    const Post = mongoose.model('Post', PostSchema)
     const user = await User.findOne({ userAt: userId })
       .populate({
         path: 'posts',

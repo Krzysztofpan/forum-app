@@ -49,7 +49,7 @@ const userSchema = new mongoose.Schema({
   },
   posts: {
     type: [mongoose.Types.ObjectId],
-    ref: 'Post',
+    ref: Post,
     default: [],
   },
   followers: {
