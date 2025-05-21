@@ -76,10 +76,10 @@ const HomeNavbar = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
       <Link href={`/${user.userAt}`} className="group xl:w-full cursor-pointer">
         <div
           className={`flex gap-5 text-xl items-center  px-4 py-3 hover:bg-foreground/10  rounded-full group-hover:bg-foreground/10 w-fit  ${
-            path === String(user.userAt) ? 'font-bold' : null
+            path === `/${String(user.userAt)}` ? 'font-bold' : null
           }`}
         >
-          {path === String(user.userAt) ? (
+          {path === `/${String(user.userAt)}` ? (
             <FaUser className="scale-130" />
           ) : (
             <FaRegUser className="scale-130" />
