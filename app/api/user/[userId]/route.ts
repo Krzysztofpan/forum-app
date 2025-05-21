@@ -11,7 +11,6 @@ export async function GET(
   try {
     await connectionToDatabase()
     const userId = (await params).userId
-    console.log(userId)
 
     const user = await User.findOne({ userAt: userId })
       .populate({
