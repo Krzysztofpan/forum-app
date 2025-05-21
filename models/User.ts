@@ -37,15 +37,19 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
+    default: '',
   },
   banner: {
     type: String,
+    default: '',
   },
   bio: {
     type: String,
+    default: '',
   },
   website: {
     type: String,
+    default: '',
   },
   posts: {
     type: [mongoose.Types.ObjectId],
