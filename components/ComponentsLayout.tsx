@@ -7,7 +7,7 @@ const ComponentsLayout = ({ children }: { children: ReactNode }) => {
       {children}
 
       <div className="hidden lg:block w-full  max-w-[350px]   mt-2 shrink-[2]">
-        <SearchInput />
+        <SearchInput /> ss
       </div>
     </div>
   )

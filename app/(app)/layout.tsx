@@ -5,13 +5,6 @@ import User from '@/models/User'
 
 import { ReactNode } from 'react'
 
-/* interface CloudinaryResource {
-  height: number
-  width: number
-  public_id: string
-  secure_url: string
-} */
-
 const AppLayout = async ({
   children,
   modal,
@@ -24,7 +17,9 @@ const AppLayout = async ({
   if (!session || !session?.user) {
     return null
   }
+
   const user = await User.findById(session.user.id)
+
   const serializedUser = serializeUser(user)
   return (
     <>
