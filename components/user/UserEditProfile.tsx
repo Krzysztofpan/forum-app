@@ -129,7 +129,7 @@ const UserEditProfile = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
   }
 
   return (
-    <>
+    <div className="w-full sm:w-[600px] mx-auto">
       {!isCrop ? (
         <form action={onSave}>
           <DialogTitle
@@ -139,7 +139,7 @@ const UserEditProfile = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
             <DialogClose>
               <X size={20} />
             </DialogClose>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center py-1">
               <span className="font-bold text-xl">Edit profile</span>
               <DialogClose asChild>
                 <Button className="rounded-full text-base" type="submit">
@@ -255,7 +255,7 @@ const UserEditProfile = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
           />
         </>
       )}
-    </>
+    </div>
   )
 }
 

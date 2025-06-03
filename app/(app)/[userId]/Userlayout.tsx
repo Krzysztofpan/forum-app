@@ -33,7 +33,7 @@ export default async function UserLayout({
   )
 
   return (
-    <div className="border-x-[1px] border-x-solid  min-h-[100vh] relative">
+    <div className="  min-h-[100vh] relative">
       <StickyTopComponent>
         <BackComponent>
           <div>

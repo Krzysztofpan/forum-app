@@ -67,7 +67,7 @@ const PostComponent = async ({
           </div>
         </div>
         <div className="space-y-2 ">
-          <div>{post.content}</div>
+          <p className="text-wrap  break-words">{post.content}</p>
           {post.media && <MediaPost media={post.media} />}
         </div>
         {post.type === 'quote' ? (

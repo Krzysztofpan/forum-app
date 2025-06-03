@@ -19,95 +19,106 @@ import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu'
 import { logout } from '@/lib/actions/auth.action'
 import { userType } from '@/models/User'
 
+import useScroll from '@/hooks/useScroll'
+
 const HomeNavbar = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
   const path = usePathname()
-
+  const isScrolled = useScroll()
   return (
-    <nav className="mx-1 sm:mx-2  flex items-end xl:items-start flex-col gap-3  sticky top-0 h-fit w-full  max-w-[265px] ">
-      <div className="group w-full cursor-pointer">
-        <Link
-          href="/home"
-          className="flex gap-5 text-xl justify-end xl:justify-start  xl:items-center mx-4 mt-3 "
-        >
-          <Image src="/logo-sm.png" width={25} height={25} alt="Cube" />
+    <nav
+      className={`flex bg-background pb-1 border-t-[1px] xs:pt-2 xs:pb-8 xs:h-screen xs:flex-col justify-between  ${
+        isScrolled ? 'opacity-30 xs:opacity-100' : ''
+      }`}
+    >
+      <div className="flex w-full justify-between xs:flex-col gap-4 text-lg items-end xxl:items-start  xs:px-2">
+        <div className="group hidden xs:block w-full cursor-pointer">
+          <Link
+            href="/home"
+            className="flex gap-5 text-xl justify-end xxl:justify-start  xxl:items-center mx-4 mt-3 "
+          >
+            <Image src="/logo-sm.png" width={25} height={25} alt="Cube" />
+          </Link>
+        </div>
+        <Link href="/home" className="group xxl:w-full cursor-pointer">
+          <div
+            className={`flex gap-5 text-xl items-center  hover:bg-foreground/10  py-3 px-4 rounded-full group-hover:bg-foreground/10 w-fit   ${
+              path === '/home' ? 'font-bold ' : null
+            }`}
+          >
+            {path === '/home' ? (
+              <GoHomeFill className="scale-130 " />
+            ) : (
+              <GoHome className="scale-130" />
+            )}
+            <span className="hidden xxl:inline">Home</span>
+          </div>
         </Link>
-      </div>
-      <Link href="/home" className="group xl:w-full cursor-pointer">
-        <div
-          className={`flex gap-5 text-xl items-center  hover:bg-foreground/10  py-3 px-4 rounded-full group-hover:bg-foreground/10 w-fit   ${
-            path === '/home' ? 'font-bold ' : null
-          }`}
-        >
-          {path === '/home' ? (
-            <GoHomeFill className="scale-130 " />
-          ) : (
-            <GoHome className="scale-130" />
-          )}
-          <span className="hidden xl:inline">Home</span>
+        <div className="group xxl:w-full cursor-pointer">
+          <Link
+            href="/explore"
+            className={`flex gap-5 text-xl items-center  hover:bg-foreground/10  py-3 px-4 rounded-full group-hover:bg-foreground/10 w-fit  ${
+              path === '/explore' ? 'font-bold' : null
+            }   justify-end xxl:justify-start`}
+          >
+            <Search
+              className={` ${path === '/explore' ? 'stroke-[3] ' : null}`}
+            />
+            <span className="hidden xxl:inline">Explore</span>
+          </Link>
         </div>
-      </Link>
-      <div className="group xl:w-full cursor-pointer">
-        <Link
-          href="/explore"
-          className={`flex gap-5 text-xl items-center  hover:bg-foreground/10  py-3 px-4 rounded-full group-hover:bg-foreground/10 w-fit  ${
-            path === '/explore' ? 'font-bold' : null
-          }   justify-end xl:justify-start`}
-        >
-          <Search
-            className={` ${path === '/explore' ? 'stroke-[3] ' : null}`}
-          />
-          <span className="hidden xl:inline">Explore</span>
+        <Link href="/notifications" className="group xxl:w-full cursor-pointer">
+          <div
+            className={`flex gap-5 text-xl items-center  px-4 py-3 hover:bg-foreground/10  rounded-full group-hover:bg-foreground/10 w-fit  ${
+              path === '/notifications' ? 'font-bold' : null
+            }`}
+          >
+            {path === '/notifications' ? (
+              <GoBellFill className="scale-130" />
+            ) : (
+              <GoBell className="scale-130" />
+            )}
+            <span className="hidden xxl:inline">Notifications</span>
+          </div>
         </Link>
-      </div>
-      <Link href="/notifications" className="group xl:w-full cursor-pointer">
-        <div
-          className={`flex gap-5 text-xl items-center  px-4 py-3 hover:bg-foreground/10  rounded-full group-hover:bg-foreground/10 w-fit  ${
-            path === '/notifications' ? 'font-bold' : null
-          }`}
+        <Link
+          href={`/${user.userAt}`}
+          className="group xxl:w-full cursor-pointer"
         >
-          {path === '/notifications' ? (
-            <GoBellFill className="scale-130" />
-          ) : (
-            <GoBell className="scale-130" />
-          )}
-          <span className="hidden xl:inline">Notifications</span>
-        </div>
-      </Link>
-      <Link href={`/${user.userAt}`} className="group xl:w-full cursor-pointer">
-        <div
-          className={`flex gap-5 text-xl items-center  px-4 py-3 hover:bg-foreground/10  rounded-full group-hover:bg-foreground/10 w-fit  ${
-            path === `/${String(user.userAt)}` ? 'font-bold' : null
-          }`}
-        >
-          {path === `/${String(user.userAt)}` ? (
-            <FaUser className="scale-130" />
-          ) : (
-            <FaRegUser className="scale-130" />
-          )}
-          <span className="hidden xl:inline">Profile</span>
-        </div>
-      </Link>
-      <Link href="/bookmarks" className="group xl:w-full cursor-pointer ">
-        <div
-          className={`flex  gap-5 text-xl items-center px-4 py-3 hover:bg-foreground/10 rounded-full group-hover:bg-foreground/10 w-fit  ${
-            path === '/bookmarks' ? 'font-bold' : null
-          }`}
-        >
-          {path === '/bookmarks' ? (
-            <PiBookmarkSimpleFill className="scale-130" />
-          ) : (
-            <PiBookmarkSimple className="scale-130" />
-          )}
-          <span className="hidden xl:inline">Bookmarks</span>
-        </div>
-      </Link>
-      {/*  <Link href={'/compose/post'}>
-        <Button className="hidden xl:inline-flex w-full py-6 rounded-full text-lg mt-4 mb-8">
+          <div
+            className={`flex gap-5 text-xl items-center  px-4 py-3 hover:bg-foreground/10  rounded-full group-hover:bg-foreground/10 w-fit  ${
+              path === `/${String(user.userAt)}` ? 'font-bold' : null
+            }`}
+          >
+            {path === `/${String(user.userAt)}` ? (
+              <FaUser className="scale-130" />
+            ) : (
+              <FaRegUser className="scale-130" />
+            )}
+            <span className="hidden xxl:inline">Profile</span>
+          </div>
+        </Link>
+        <Link href="/bookmarks" className="group xxl:w-full cursor-pointer ">
+          <div
+            className={`flex  gap-5 text-xl items-center px-4 py-3 hover:bg-foreground/10 rounded-full group-hover:bg-foreground/10 w-fit  ${
+              path === '/bookmarks' ? 'font-bold' : null
+            }`}
+          >
+            {path === '/bookmarks' ? (
+              <PiBookmarkSimpleFill className="scale-130" />
+            ) : (
+              <PiBookmarkSimple className="scale-130" />
+            )}
+            <span className="hidden xxl:inline">Bookmarks</span>
+          </div>
+        </Link>
+        {/*  <Link href={'/compose/post'}>
+        <Button className="hidden xxl:inline-flex w-full py-6 rounded-full text-lg mt-4 mb-8">
           Post
         </Button>
       </Link> */}
-      <div className="xl:grid xl:grid-cols-[1fr_20px]">
-        <div className="xl:grid xl:grid-cols-[40px_190px] xl:gap-3">
+      </div>
+      <div className="hidden xs:block  xxl:grid xxl:grid-cols-[1fr_20px]">
+        <div className="flex items-center justify-center xxl:grid xxl:grid-cols-[40px_190px] xxl:gap-3 ">
           <Image
             src={user.avatar || '/logo.png'}
             alt="logo"
@@ -115,12 +126,12 @@ const HomeNavbar = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
             width={40}
             height={40}
           />
-          <div className="xl:flex flex-col hidden ">
+          <div className="xxl:flex flex-col hidden ">
             <span className="font-bold">{user.username}</span>
             <span className="text-foreground/50">@{user.userAt}</span>
           </div>
         </div>
-        <div className="hidden xl:flex items-center justify-center ">
+        <div className="hidden xxl:flex items-center justify-center ">
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Ellipsis />

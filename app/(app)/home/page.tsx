@@ -1,5 +1,4 @@
 import MainApp from '@/app/(app)/home/MainApp'
-import ComponentsLayout from '@/components/ComponentsLayout'
 
 import { AddPostContextProvider } from '@/context/AddPostContext'
 
@@ -10,9 +9,7 @@ const HomePage = () => {
   } */
   return (
     <AddPostContextProvider>
-      <ComponentsLayout>
-        <MainApp />
-      </ComponentsLayout>
+      <MainApp />
     </AddPostContextProvider>
   )
 }

@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+@tailwind utilities;
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -78,6 +80,7 @@
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --border: oklch(0.708 0.5 0.3);
+
 }
 
 .dark {
@@ -113,6 +116,7 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
   --border: rgb(55, 55, 55);
+
 }
 
 @layer base {
@@ -134,4 +138,12 @@
 
 .animate-bg-move {
   animation: move-bg 100s linear infinite;
+}
+@theme {
+  --breakpoint-xs: 500px;
+  --breakpoint-sm: 615px;
+  --breakpoint-md: 690px;
+  --breakpoint-lg: 1003px;
+  --breakpoint-xl: 1078px;
+  --breakpoint-xxl: 1280px;
 }

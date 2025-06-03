@@ -21,7 +21,7 @@ export default async function RootLayout({
     <>
       <html lang="en" suppressHydrationWarning>
         <head />
-        <body>
+        <body className="">
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
