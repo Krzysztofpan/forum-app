@@ -3,7 +3,7 @@
 import UserProfileInput from './UserProfileInput'
 import { Button } from '../ui/button'
 import Image from 'next/image'
-import { DialogClose, DialogTitle } from '../ui/dialog'
+import { DialogClose, DialogContent, DialogTitle } from '../ui/dialog'
 import { ArrowLeft, X } from 'lucide-react'
 import { userType } from '@/models/User'
 import { Dispatch, SetStateAction, useState } from 'react'
@@ -15,9 +15,11 @@ import { blobToDataURL } from '@/lib/blobToUrl'
 
 import { updateUserInfo, uploadUserImage } from '@/lib/actions/user.action'
 import { useRouter } from 'next/navigation'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 const UserEditProfile = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
   const router = useRouter()
+
   const [edit, setEdit] = useState<'avatar' | 'banner'>('avatar')
   const [avatar, setAvatar] = useState<{
     url: string
@@ -39,6 +41,7 @@ const UserEditProfile = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
     type: string
     dataURL: string
   }>() */
+  const isMobile = useIsMobile()
   const [isCrop, setIsCrop] = useState(false)
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<{
     width: number
@@ -129,107 +132,104 @@ const UserEditProfile = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
   }
 
   return (
-    <div className="w-full sm:w-[600px] mx-auto">
-      {!isCrop ? (
-        <form action={onSave}>
-          <DialogTitle
-            className="grid grid-cols-[50px_1fr] py-1 px-3
+    <DialogContent
+      className={`${
+        !isCrop
+          ? 'max-w-[690px]! md:max-w-[600px]! w-full h-full p-0 m-0 '
+          : `px-0 rounded-sm max-w-[600px]  md:min-w-[600px] w-[90vw] ${
+              isMobile ? 'h-screen' : ''
+            }`
+      } rounded-none border-none md:rounded-sm    md:px-0  md:h-auto`}
+    >
+      <div
+        className={`${
+          isCrop ? 'm-4 w-[90vw]' : 'w-full'
+        } max-w-[600px] mx-auto`}
+      >
+        {!isCrop ? (
+          <form action={onSave}>
+            <DialogTitle
+              className="grid grid-cols-[50px_1fr] py-1 px-3
          items-center"
-          >
-            <DialogClose>
-              <X size={20} />
-            </DialogClose>
-            <div className="flex justify-between items-center py-1">
-              <span className="font-bold text-xl">Edit profile</span>
-              <DialogClose asChild>
-                <Button className="rounded-full text-base" type="submit">
-                  Save
-                </Button>
+            >
+              <DialogClose>
+                <X size={20} />
               </DialogClose>
-            </div>
-          </DialogTitle>
-          <div className="aspect-[3/1] w-full h-auto  m-0 relative">
-            {croppedBannerUrl && (
-              <Image
-                src={croppedBannerUrl}
-                alt="banner"
-                className="opacity-80 px-[1px]"
-                fill
-              />
-            )}
-
-            <Comp
-              id="banner-upload"
-              setAspect={setAspect}
-              setIsCrop={setIsCrop}
-              setMedia={setBanner}
-              aspect={3 / 1}
-              setEdit={setEdit}
-              edit="banner"
-              croppedImageUrl={croppedBannerUrl}
-              setCroppedImageUrl={setCroppedBannerUrl}
-              setCroppedImageDataURL={setCroppedBannerDataURL}
-            />
-          </div>
-          <div>
-            <div className="translate-y-[-50%] mx-4 ">
-              <div className="relative w-fit border-[4px] rounded-full border-black">
+              <div className="flex justify-between items-center py-1">
+                <span className="font-bold text-xl">Edit profile</span>
+                <DialogClose asChild>
+                  <Button className="rounded-full text-base" type="submit">
+                    Save
+                  </Button>
+                </DialogClose>
+              </div>
+            </DialogTitle>
+            <div className="aspect-[3/1] w-full h-auto  m-0 relative">
+              {croppedBannerUrl && (
                 <Image
-                  src={croppedAvatarUrl || user.avatar || '/logo-sm.png'}
-                  alt="avatar"
-                  width={112}
-                  height={112}
-                  className="rounded-full  bg-background aspect-square "
+                  src={croppedBannerUrl}
+                  alt="banner"
+                  className="opacity-80 px-[1px]"
+                  fill
                 />
-                <Comp
-                  id="avatar-upload"
-                  setAspect={setAspect}
-                  setIsCrop={setIsCrop}
-                  setMedia={setAvatar}
-                  aspect={1 / 1}
-                  setEdit={setEdit}
-                  edit="avatar"
+              )}
+
+              <Comp
+                id="banner-upload"
+                setAspect={setAspect}
+                setIsCrop={setIsCrop}
+                setMedia={setBanner}
+                aspect={3 / 1}
+                setEdit={setEdit}
+                edit="banner"
+                croppedImageUrl={croppedBannerUrl}
+                setCroppedImageUrl={setCroppedBannerUrl}
+                setCroppedImageDataURL={setCroppedBannerDataURL}
+              />
+            </div>
+            <div>
+              <div className="translate-y-[-50%] mx-4 ">
+                <div className="relative w-fit border-[4px] rounded-full border-black">
+                  <Image
+                    src={croppedAvatarUrl || user.avatar || '/logo-sm.png'}
+                    alt="avatar"
+                    width={112}
+                    height={112}
+                    className="rounded-full  bg-background aspect-square "
+                  />
+                  <Comp
+                    id="avatar-upload"
+                    setAspect={setAspect}
+                    setIsCrop={setIsCrop}
+                    setMedia={setAvatar}
+                    aspect={1 / 1}
+                    setEdit={setEdit}
+                    edit="avatar"
+                  />
+                </div>
+              </div>
+              <div className="mx-4 space-y-8 translate-y-[-15%]">
+                <UserProfileInput
+                  placeholder="Name"
+                  defaultValue={user.username}
                 />
+                <UserProfileInput
+                  textarea
+                  placeholder="Bio"
+                  defaultValue={user.bio || ''}
+                />
+                <UserProfileInput placeholder="Website" defaultValue="" />
               </div>
             </div>
-            <div className="mx-4 space-y-8 translate-y-[-15%]">
-              <UserProfileInput
-                placeholder="Name"
-                defaultValue={user.username}
-              />
-              <UserProfileInput
-                textarea
-                placeholder="Bio"
-                defaultValue={user.bio || ''}
-              />
-              <UserProfileInput placeholder="Website" defaultValue="" />
-            </div>
-          </div>
-        </form>
-      ) : (
-        <>
-          <DialogTitle
-            className="grid grid-cols-[50px_1fr] py-2 px-3
+          </form>
+        ) : (
+          <>
+            <DialogTitle
+              className="grid grid-cols-[50px_1fr] py-2 px-3
          items-center"
-          >
-            <ArrowLeft
-              size={20}
-              onClick={() =>
-                saveCroppedImage(
-                  croppedAreaPixels,
-                  edit === 'avatar' ? avatar : banner,
-                  edit === 'avatar' ? setCroppedAvatarUrl : setCroppedBannerUrl,
-                  edit === 'avatar'
-                    ? setCroppedAvatarDataURL
-                    : setCroppedBannerDataURL
-                )
-              }
-            />
-
-            <div className="flex justify-between items-center">
-              <span className="font-bold text-xl">Edit media</span>
-              <Button
-                className="rounded-full text-base"
+            >
+              <ArrowLeft
+                size={20}
                 onClick={() =>
                   saveCroppedImage(
                     croppedAreaPixels,
@@ -242,20 +242,39 @@ const UserEditProfile = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
                       : setCroppedBannerDataURL
                   )
                 }
-              >
-                Apply
-              </Button>
-            </div>
-          </DialogTitle>
-          <CropperImg
-            imageSrc={edit === 'avatar' ? avatar.url : banner.url}
-            onCropComplete={handleCropComplete}
-            media={edit === 'avatar' ? avatar : banner}
-            aspect={aspect}
-          />
-        </>
-      )}
-    </div>
+              />
+
+              <div className="flex justify-between items-center">
+                <span className="font-bold text-xl">Edit media</span>
+                <Button
+                  className="rounded-full text-base"
+                  onClick={() =>
+                    saveCroppedImage(
+                      croppedAreaPixels,
+                      edit === 'avatar' ? avatar : banner,
+                      edit === 'avatar'
+                        ? setCroppedAvatarUrl
+                        : setCroppedBannerUrl,
+                      edit === 'avatar'
+                        ? setCroppedAvatarDataURL
+                        : setCroppedBannerDataURL
+                    )
+                  }
+                >
+                  Apply
+                </Button>
+              </div>
+            </DialogTitle>
+            <CropperImg
+              imageSrc={edit === 'avatar' ? avatar.url : banner.url}
+              onCropComplete={handleCropComplete}
+              media={edit === 'avatar' ? avatar : banner}
+              aspect={aspect}
+            />
+          </>
+        )}
+      </div>
+    </DialogContent>
   )
 }
 
