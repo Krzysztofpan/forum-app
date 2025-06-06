@@ -43,7 +43,7 @@ const UserFollow = ({
           className="rounded-full font-bold text-base cursor-pointer"
           onClick={handleFollow}
         >
-          Follow
+          Followw
         </Button>
       )}
     </>
