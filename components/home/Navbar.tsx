@@ -26,11 +26,11 @@ const HomeNavbar = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
   const isScrolled = useScroll()
   return (
     <nav
-      className={`flex bg-background pb-1 border-t-[1px] xs:pt-2 xs:pb-8 xs:h-screen xs:flex-col justify-between  ${
+      className={`flex bg-background pb-1 border-t-[1px] xs:pt-2 xs:pb-8 xs:h-screen xs:flex-col justify-between z-50 ${
         isScrolled ? 'opacity-30 xs:opacity-100' : ''
       }`}
     >
-      <div className="flex w-full justify-between xs:flex-col gap-4 text-lg items-end xxl:items-start  xs:px-2">
+      <div className="flex  w-full justify-between xs:flex-col sm:gap-4 text-lg items-end xxl:items-start  xs:px-2">
         <div className="group hidden xs:block w-full cursor-pointer">
           <Link
             href="/home"
@@ -46,9 +46,9 @@ const HomeNavbar = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
             }`}
           >
             {path === '/home' ? (
-              <GoHomeFill className="scale-130 " />
+              <GoHomeFill className="sm:scale-130 " />
             ) : (
-              <GoHome className="scale-130" />
+              <GoHome className="sm:scale-130" />
             )}
             <span className="hidden xxl:inline">Home</span>
           </div>
@@ -73,9 +73,9 @@ const HomeNavbar = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
             }`}
           >
             {path === '/notifications' ? (
-              <GoBellFill className="scale-130" />
+              <GoBellFill className="sm:scale-130" />
             ) : (
-              <GoBell className="scale-130" />
+              <GoBell className="sm:scale-130" />
             )}
             <span className="hidden xxl:inline">Notifications</span>
           </div>
@@ -90,9 +90,9 @@ const HomeNavbar = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
             }`}
           >
             {path === `/${String(user.userAt)}` ? (
-              <FaUser className="scale-130" />
+              <FaUser className="sm:scale-130" />
             ) : (
-              <FaRegUser className="scale-130" />
+              <FaRegUser className="sm:scale-130" />
             )}
             <span className="hidden xxl:inline">Profile</span>
           </div>
@@ -104,9 +104,9 @@ const HomeNavbar = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
             }`}
           >
             {path === '/bookmarks' ? (
-              <PiBookmarkSimpleFill className="scale-130" />
+              <PiBookmarkSimpleFill className="sm:scale-130" />
             ) : (
-              <PiBookmarkSimple className="scale-130" />
+              <PiBookmarkSimple className="sm:scale-130" />
             )}
             <span className="hidden xxl:inline">Bookmarks</span>
           </div>

@@ -19,7 +19,7 @@ const RepostedPost = ({
   return (
     <Card className="py-0 px-0 mr-4 my-1">
       <CardContent className=" flex flex-col gap-1 m-0 p-0 ">
-        {media.length < 1 ? (
+        {repostPost.media.length > 0 ? (
           <>
             <div className="flex gap-2 mt-3 mx-3">
               <Image
@@ -29,10 +29,10 @@ const RepostedPost = ({
                 width={24}
                 height={24}
               />
-              <span className="font-semibold">
+              <span className="font-semibold truncate  ">
                 {repostPost.creator.username}
               </span>
-              <span className="text-foreground/50">
+              <span className="text-foreground/50 truncate ">
                 @{repostPost.creator.userAt}
               </span>
               <span className="flex items-center justify-center">
@@ -44,7 +44,7 @@ const RepostedPost = ({
             </div>
             <div>
               <p className="mx-3  mb-3">{repostPost.content}</p>
-              {repostPost.media.length > 1 ? (
+              {repostPost.media.length > 0 ? (
                 <MediaPost media={repostPost.media} />
               ) : null}
             </div>
@@ -59,10 +59,10 @@ const RepostedPost = ({
                 width={24}
                 height={24}
               />
-              <span className="font-semibold">
+              <span className="font-semibold truncate">
                 {repostPost.creator.username}
               </span>
-              <span className="text-foreground/50">
+              <span className="text-foreground/50 truncate">
                 @{repostPost.creator.userAt}
               </span>
               <span className="flex items-center justify-center">

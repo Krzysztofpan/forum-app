@@ -27,12 +27,12 @@ const ModalPostCreate = async ({
   return (
     <AddPostContextProvider>
       <Modal>
-        <DialogContent className="sm:w-[600px] p-0 sm:max-w-full max-h-[800px] overflow-auto">
+        <DialogContent className=" p-0  max-h-[800px] overflow-y-auto overflow-x-hidden sm:max-w-[600px] md:min-w-[600px]">
           <DialogTitle></DialogTitle>
           <AddPostComponent
             type="quote"
             placeholder="Add a comment"
-            className="mx-0 "
+            className="mx-0 w-full"
             repostPost={repostedPost}
           />
         </DialogContent>

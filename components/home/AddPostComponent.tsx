@@ -4,7 +4,7 @@ import { Textarea } from '../ui/textarea'
 import { Image as ImageEmoji, Smile } from 'lucide-react'
 import { MdOutlineGifBox } from 'react-icons/md'
 import { CiCircleList, CiLocationOn } from 'react-icons/ci'
-import { RiCalendarScheduleLine } from 'react-icons/ri'
+import { RiCalendarScheduleLine, RiUserLocationFill } from 'react-icons/ri'
 import { Button } from '../ui/button'
 import EmojiPicker, {
   EmojiClickData,
@@ -13,7 +13,12 @@ import EmojiPicker, {
 } from 'emoji-picker-react'
 import { useAddPostContext } from '@/context/AddPostContext'
 import MediaContainer from './MediaContainer'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from 'next/navigation'
 import ButtonWithTooltip from '../ButtonWithTooltip'
 
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
@@ -26,6 +31,7 @@ import { PostType } from '@/models/Post'
 
 import RepostedPost from '../post/RepostedPost'
 import Image from 'next/image'
+import { useModalOpen } from '@/context/ModalContext'
 
 export type FileType = {
   url: string
@@ -72,17 +78,24 @@ const AddPostComponent = ({
   function handleClickEmoji(emoji: EmojiClickData) {
     setContent(content + emoji.emoji)
   }
-
+  const { isOpen } = useModalOpen()
   const params = useParams()
   const searchParams = useSearchParams()
-
+  const pathname = usePathname()
   useEffect(() => {
     const gifData = localStorage.getItem('selectedGif')
     if (gifData) {
-      addMedia(JSON.parse(gifData))
-      localStorage.removeItem('selectedGif') // opcjonalnie usuń po odczycie
+      if (isOpen) {
+        if (pathname.includes('/compose/post')) {
+          addMedia(JSON.parse(gifData))
+          localStorage.removeItem('selectedGif')
+        }
+      } else {
+        addMedia(JSON.parse(gifData))
+        localStorage.removeItem('selectedGif')
+      }
     }
-  })
+  }, [isOpen, addMedia])
   async function handleSubmit(formData: FormData) {
     startTransition(async () => {})
     if (!isPoll) {
@@ -194,23 +207,7 @@ const AddPostComponent = ({
           >
             GIF
           </ButtonWithTooltip>
-          {/* {!(type === 'comment') ? (
-            <ButtonWithTooltip
-              trigger={
-                <Button
-                  onClick={() => setIsPoll(true)}
-                  variant="ghost"
-                  type="button"
-                  className="m-0 p-0 rounded-full hidden sm:inline-flex "
-                  disabled={isPoll}
-                >
-                  <CiCircleList className="text-blue-400 scale-120" />
-                </Button>
-              }
-            >
-              Poll
-            </ButtonWithTooltip>
-          ) : null} */}
+
           <Popover modal>
             <PopoverTrigger>
               <ButtonWithTooltip
@@ -235,29 +232,6 @@ const AddPostComponent = ({
               />
             </PopoverContent>
           </Popover>
-
-          {/*   {!(type === 'comment') ? (
-            <ButtonWithTooltip
-              trigger={
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="m-0 p-0 rounded-full  "
-                >
-                  <RiCalendarScheduleLine className="text-blue-400 scale-120" />
-                </Button>
-              }
-            >
-              Schedule
-            </ButtonWithTooltip>
-          ) : null} */}
-          {/*  <Button
-            variant="ghost"
-            type="button"
-            className="m-0 p-0 rounded-full  "
-          >
-            <CiLocationOn className="text-blue-400 scale-120" />
-          </Button> */}
         </div>
         <div className="flex gap-2">
           {content.length > 0 && (

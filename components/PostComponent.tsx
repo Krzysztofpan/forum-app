@@ -13,6 +13,7 @@ import { auth } from '@/auth'
 import Image from 'next/image'
 import { formatPostTime } from '@/lib/utils/customPostDate'
 import RepostedPost from './post/RepostedPost'
+import { BiRepost } from 'react-icons/bi'
 
 const PostComponent = async ({
   post,
@@ -31,12 +32,20 @@ const PostComponent = async ({
 
   return (
     <PostContainer href={`/${post.creator.userAt}/status/${post._id}`}>
+      {post.creator.userAt !== user.userAt && (
+        <span className="col-span-3 flex text-foreground/50 items-center gap-1 ml-6 ">
+          <BiRepost size={20} />{' '}
+          <span className="font-semibold text-sm">
+            {user.username} reposted
+          </span>
+        </span>
+      )}
       <div>
-        <LinkWithoutPropagation href={`/${user.userAt}`} className="">
-          {user.avatar ? (
+        <LinkWithoutPropagation href={`/${post.creator.userAt}`} className="">
+          {post.creator.avatar ? (
             <Image
-              src={user.avatar || ''}
-              alt={`${user.userAt} avatar`}
+              src={post.creator.avatar || ''}
+              alt={`${post.creator.userAt} avatar`}
               width={40}
               height={40}
               className="rounded-full"
@@ -51,13 +60,16 @@ const PostComponent = async ({
         <div className="flex justify-between items-center">
           <div className="space-x-1 text-foreground/50">
             <LinkWithoutPropagation
-              href={`/${user.userAt}`}
-              className="font-bold text-foreground hover:underline"
+              href={`/${post.creator.userAt}`}
+              className="font-bold text-foreground hover:underline  truncate"
             >
-              {user.username}
+              {post.creator.username}
             </LinkWithoutPropagation>
-            <LinkWithoutPropagation href={`/${user.userAt}`} className="">
-              <span className="">@{user.userAt}</span>
+            <LinkWithoutPropagation
+              href={`/${post.creator.userAt}`}
+              className=""
+            >
+              <span className="truncate">@{post.creator.userAt}</span>
             </LinkWithoutPropagation>
             <Dot className="inline" size={12} />
             <span>{timeAgo}</span>

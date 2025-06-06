@@ -174,8 +174,10 @@ export const toggleRepostPost = async (postId: string) => {
     post.reposts = post.reposts.filter(
       (repostId: string) => repostId != session.user.id
     )
+
+    console.log(reposted)
     await User.findByIdAndUpdate(session.user.id, {
-      $pull: { posts: reposted },
+      $pull: { posts: post.id },
     })
     await post.save()
     /* revalidatePath('/') */
@@ -185,6 +187,7 @@ export const toggleRepostPost = async (postId: string) => {
   /* const objectId = new mongoose.Types.ObjectId(session.user.id) */
 
   post.reposts.push(session.user.id)
+
   await User.findByIdAndUpdate(session.user.id, { $push: { posts: post._id } })
   await post.save()
 

@@ -14,9 +14,7 @@ const MainContent = async () => {
     .populate('creator')
     .populate({
       path: 'quotePost',
-      populate: {
-        path: 'creator',
-      },
+      populate: ['creator', 'comments'],
     })
     .limit(10)
 

@@ -1,7 +1,8 @@
 'use client'
 
-import { FileType } from '@/components/home/AddPostComponent'
+import { FileType, GifType } from '@/components/home/AddPostComponent'
 import { blobToDataURL } from '@/lib/blobToUrl'
+import { useRouter } from 'next/navigation'
 import {
   ChangeEvent,
   createContext,
@@ -36,6 +37,7 @@ const AddPostContext = createContext<ContextType | undefined>(undefined)
 
 export function AddPostContextProvider({ children }: { children: ReactNode }) {
   const [content, setContent] = useState<string>('')
+  const router = useRouter()
   const [media, setMedia] = useState<FileType[] | []>([])
   const [dimensions, setDimensions] = useState<{
     width: number

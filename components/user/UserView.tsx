@@ -33,12 +33,12 @@ const UserView = ({
         )}
       </Link>
       <div className="flex justify-between">
-        <div className="flex flex-col justify-start text-sm">
+        <div className="flex flex-col justify-start ">
           <Link href={`/${userAt}`}>
-            <p className="font-bold">{username}</p>
+            <p className="font-bold truncate  ">{username}</p>
           </Link>
           <Link href={`/${userAt}`}>
-            <p className="text-foreground/50">@{userAt}</p>
+            <p className="text-foreground/50 truncate ">@{userAt}</p>
           </Link>
         </div>
         {!isFollowed && userId && (

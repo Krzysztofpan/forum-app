@@ -11,32 +11,24 @@ const UserFollow = ({
   isFollowed: boolean
   userId: string
 }) => {
-  const [isFollowedOptimistic, setIsFollowedOptimistic] = useOptimistic(
-    isFollowed,
-    (state, optimisticValue: boolean) => {
-      return optimisticValue
-    }
-  )
+  const [isFollowedState, setIsFollowedState] = useState(isFollowed)
+
   const [unfollowTransitionButton, setUnfollowTransitionButton] =
     useState(false)
-  const [, startTransition] = useTransition()
 
-  const handleFollow = () => {
-    startTransition(async () => {
-      setIsFollowedOptimistic(true)
-      await follow(userId)
-    })
+  const handleFollow = async () => {
+    setIsFollowedState((prev) => !prev)
+    await follow(userId)
   }
 
-  const handleUnfollow = () => {
-    startTransition(async () => {
-      setIsFollowedOptimistic(false)
-      await unfollow(userId)
-    })
+  const handleUnfollow = async () => {
+    setIsFollowedState((prev) => !prev)
+    await unfollow(userId)
   }
+
   return (
     <>
-      {isFollowedOptimistic ? (
+      {isFollowedState ? (
         <Button
           variant="outline"
           className=" rounded-full hover:cursor-pointer w-24  hover:text-red-700 hover:font-bold hover:bg-red-300/10! hover:border-red-700!"
