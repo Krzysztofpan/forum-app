@@ -10,7 +10,8 @@ const MediaPost = ({
     url: string
     height: number
     width: number
-    public_id: string
+    public_id: string | null
+    type: string | null
   }[]
 }) => {
   return (
@@ -25,7 +26,7 @@ const MediaPost = ({
             url: string
             height: number
             width: number
-            public_id: string
+            public_id: string | null
           },
           i: number
         ) => {
@@ -102,7 +103,7 @@ const MediaPost = ({
               >
                 <CldVideoPlayer
                   src={mediaObj.url}
-                  id={mediaObj.public_id}
+                  id={mediaObj.public_id || mediaObj.url}
                   className="h-full object-cover"
                   height={mediaObj.height}
                   width={mediaObj.width}

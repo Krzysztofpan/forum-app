@@ -1,6 +1,6 @@
 'use client'
 import { useIsMobile } from '@/hooks/use-mobile'
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback } from 'react'
 import Cropper, { Area } from 'react-easy-crop'
 
 interface Media {

@@ -3,9 +3,6 @@ import { useEffect, useState } from 'react'
 const useScroll = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   useEffect(() => {
-    // Funkcja sprawdzająca szerokość ekranu
-
-    // Funkcja obsługująca scroll
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0)
     }

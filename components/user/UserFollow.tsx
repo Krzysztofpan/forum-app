@@ -1,15 +1,17 @@
 'use client'
 
+import { followUser } from '@/lib/actions/user.action'
 import { Button } from '../ui/button'
-import { useOptimistic, useState, useTransition } from 'react'
-import { follow, unfollow } from '@/lib/actions/user.action'
+import { useState } from 'react'
 
 const UserFollow = ({
   isFollowed,
   userId,
+  username,
 }: {
   isFollowed: boolean
   userId: string
+  username: string
 }) => {
   const [isFollowedState, setIsFollowedState] = useState(isFollowed)
 
@@ -18,12 +20,7 @@ const UserFollow = ({
 
   const handleFollow = async () => {
     setIsFollowedState((prev) => !prev)
-    await follow(userId)
-  }
-
-  const handleUnfollow = async () => {
-    setIsFollowedState((prev) => !prev)
-    await unfollow(userId)
+    await followUser(userId, username)
   }
 
   return (
@@ -34,7 +31,7 @@ const UserFollow = ({
           className=" rounded-full hover:cursor-pointer w-24  hover:text-red-700 hover:font-bold hover:bg-red-300/10! hover:border-red-700!"
           onMouseEnter={() => setUnfollowTransitionButton(true)}
           onMouseOut={() => setUnfollowTransitionButton(false)}
-          onClick={handleUnfollow}
+          onClick={handleFollow}
         >
           {unfollowTransitionButton ? 'Unfollow' : 'Following'}
         </Button>
@@ -43,7 +40,7 @@ const UserFollow = ({
           className="rounded-full font-bold text-base cursor-pointer"
           onClick={handleFollow}
         >
-          Followw
+          Follow
         </Button>
       )}
     </>

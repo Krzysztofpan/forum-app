@@ -1,54 +1,47 @@
-import { PostType } from '@/models/Post'
 import PostContainer from './home/PostContainer'
 import { FaUserCircle } from 'react-icons/fa'
 
 import { Dot, Ellipsis, Upload } from 'lucide-react'
 import MediaPost from './home/MediaPost'
 
-import { userType } from '@/models/User'
 import LinkWithoutPropagation from './LinkWithoutPropagation'
 import PostAction from './post/PostAction'
-import { serializePost } from '@/lib/utils/utlisFncs'
-import { auth } from '@/auth'
+
 import Image from 'next/image'
 import { formatPostTime } from '@/lib/utils/customPostDate'
-import RepostedPost from './post/RepostedPost'
+
 import { BiRepost } from 'react-icons/bi'
+import { PostWithDetails } from '@/types'
+import RepostedPost from './post/RepostedPost'
 
-const PostComponent = async ({
-  post,
-  user,
-}: {
-  post: PostType
-  user: userType
-}) => {
+const PostComponent = ({ post }: { post: PostWithDetails }) => {
   const timeAgo = formatPostTime(post.createdAt)
-  const session = await auth()
-  if (!session || !session.user) {
-    return
-  }
-  const userId = session?.user.id
-  const serializedPost = serializePost(post)
 
+  const originalPost = !post.desc ? post.rePost || post : post
   return (
-    <PostContainer href={`/${post.creator.userAt}/status/${post._id}`}>
-      {post.creator.userAt !== user.userAt && (
+    <PostContainer
+      href={`/${originalPost.user.username}/status/${originalPost.id}`}
+    >
+      {post.rePostId && !post.desc && (
         <span className="col-span-3 flex text-foreground/50 items-center gap-1 ml-6 ">
           <BiRepost size={20} />{' '}
           <span className="font-semibold text-sm">
-            {user.username} reposted
+            {post.user.displayName} reposted
           </span>
         </span>
       )}
       <div>
-        <LinkWithoutPropagation href={`/${post.creator.userAt}`} className="">
-          {post.creator.avatar ? (
+        <LinkWithoutPropagation
+          href={`/${originalPost.user.username}`}
+          className=""
+        >
+          {post.user.img ? (
             <Image
-              src={post.creator.avatar || ''}
-              alt={`${post.creator.userAt} avatar`}
+              src={originalPost.user.img || '/logo-sm.png'}
+              alt={`${originalPost.user.username} avatar`}
               width={40}
               height={40}
-              className="rounded-full"
+              className="rounded-full aspect-square"
             />
           ) : (
             <FaUserCircle size={40} />
@@ -60,16 +53,16 @@ const PostComponent = async ({
         <div className="flex justify-between items-center">
           <div className="space-x-1 text-foreground/50">
             <LinkWithoutPropagation
-              href={`/${post.creator.userAt}`}
+              href={`/${originalPost.user.username}`}
               className="font-bold text-foreground hover:underline  truncate"
             >
-              {post.creator.username}
+              {originalPost.user.username}
             </LinkWithoutPropagation>
             <LinkWithoutPropagation
-              href={`/${post.creator.userAt}`}
+              href={`/${originalPost.user.username}`}
               className=""
             >
-              <span className="truncate">@{post.creator.userAt}</span>
+              <span className="truncate">@{originalPost.user.username}</span>
             </LinkWithoutPropagation>
             <Dot className="inline" size={12} />
             <span>{timeAgo}</span>
@@ -79,24 +72,23 @@ const PostComponent = async ({
           </div>
         </div>
         <div className="space-y-2 ">
-          <p className="text-wrap  break-words">{post.content}</p>
-          {post.media && <MediaPost media={post.media} />}
+          <p className="text-wrap  break-words">{originalPost.desc}</p>
+          {originalPost.media && <MediaPost media={originalPost.media} />}
         </div>
-        {post.type === 'quote' ? (
-          <RepostedPost media={post.media} repostPost={post.quotePost} />
+        {post.rePostId && post.rePost ? (
+          <RepostedPost media={post.media} repostPost={post.rePost} />
         ) : null}
       </div>
 
       <div className="col-start-2">
         <PostAction
-          post={{
-            _id: serializedPost._id,
-            comments: serializedPost.comments,
-            hearts: serializedPost.hearts,
-            reposts: serializedPost.reposts,
-            view: serializedPost.view,
-          }}
-          userId={userId}
+          username={originalPost.user.username}
+          view={originalPost.view}
+          postId={originalPost.id}
+          count={originalPost._count}
+          isLiked={!!originalPost.likes.length}
+          isRePosted={!!originalPost.rePosts.length}
+          isSaved={!!originalPost.saves.length}
         />
       </div>
       <div className="flex justify-center items-center text-foreground/50">

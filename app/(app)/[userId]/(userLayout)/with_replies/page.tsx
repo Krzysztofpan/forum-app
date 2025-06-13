@@ -1,6 +1,6 @@
 import PostComponent from '@/components/PostComponent'
-import UserLayout from '../Userlayout'
-import { PostType } from '@/models/Post'
+
+import { PostWithDetails } from '@/types'
 
 const PostWithRepliesPage = async ({
   params,
@@ -20,11 +20,11 @@ const PostWithRepliesPage = async ({
   const user = await res.json()
   const posts = user.posts
   return (
-    <UserLayout user={user}>
-      {posts.map((post: PostType) => (
-        <PostComponent key={String(post._id)} post={post} user={user} />
+    <>
+      {posts.map((post: PostWithDetails) => (
+        <PostComponent key={String(post.id)} post={post} />
       ))}
-    </UserLayout>
+    </>
   )
 }
 

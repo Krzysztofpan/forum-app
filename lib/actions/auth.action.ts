@@ -1,26 +1,31 @@
 'use server'
 
-import User from '@/models/User'
 import { SignUpFormSchema } from '@/types/schemas'
 import { z } from 'zod'
-import { comparePassword } from '../utils/bcryptUtils'
+import { comparePassword, hashPassword } from '../utils/bcryptUtils'
 import { signIn, signOut } from '@/auth'
-import connectionToDatabase from '../mongoose'
+
+import { prisma } from '@/prisma'
 
 export const signUp = async (formData: z.infer<typeof SignUpFormSchema>) => {
-  await connectionToDatabase()
   const user = SignUpFormSchema.parse({
     username: formData.username,
     email: formData.email,
-    userAt: formData.userAt,
+    displayName: formData.displayName,
     password: formData.password,
     passwordConfirm: formData.passwordConfirm,
   })
   console.log(user)
 
-  const userExist = await User.findOne({
+  /* const userExist = await User.findOne({
     email: user.email,
-    userAt: user.userAt,
+    userAt: user.displayName,
+  }) */
+
+  const userExist = await prisma.user.findFirst({
+    where: {
+      OR: [{ email: user.email }, { username: user.username }],
+    },
   })
 
   if (userExist) {
@@ -30,9 +35,19 @@ export const signUp = async (formData: z.infer<typeof SignUpFormSchema>) => {
     }
   }
 
-  try {
-    await User.create(user)
+  user.password = await hashPassword(user.password)
 
+  try {
+    // await User.create(user)
+
+    await prisma.user.create({
+      data: {
+        displayName: user.displayName,
+        username: user.username,
+        email: user.email,
+        password: user.password,
+      },
+    })
     return { success: true, message: 'Successfully created account' }
   } catch (error) {
     console.log(error)
@@ -45,9 +60,10 @@ export const signInWithCredentials = async (credentials: {
   email: string
   password: string
 }) => {
-  await connectionToDatabase()
-  const user = await User.findOne({ email: credentials.email })
-
+  /* const user = await User.findOne({ email: credentials.email }) */
+  const user = await prisma.user.findUnique({
+    where: { email: credentials.email },
+  })
   if (user) {
     const isPasswordsMatches = await comparePassword(
       credentials.password,

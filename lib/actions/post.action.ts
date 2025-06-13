@@ -1,21 +1,28 @@
 'use server'
 import { auth } from '@/auth'
 
-import Post from '@/models/Post'
-
 import { generateRandomString } from '../utils/generateRadomString'
 import cloudinary from '../cloudinary'
-import { FileType } from '@/components/home/AddPostComponent'
+import { FileType, GifType } from '@/components/home/AddPostComponent'
 import { UploadApiResponse } from 'cloudinary'
 import { revalidatePath } from 'next/cache'
-import mongoose from 'mongoose'
-import User from '@/models/User'
-import connectionToDatabase from '../mongoose'
+
+import { prisma } from '@/prisma'
+function isFileType(obj: FileType | GifType): obj is FileType {
+  return obj.type !== 'gif'
+}
+
+type MediaType = {
+  width: number
+  height: number
+  url: string
+  public_id: string
+}
 
 export const addPost = async (
   formData: FormData,
   type: string,
-  media?: FileType[],
+  media?: (FileType | GifType)[],
   parentPostId?: string,
   repostId?: string
 ) => {
@@ -31,8 +38,8 @@ export const addPost = async (
     return
   }
   if (media) {
-    const PromisedMedia = media.map(async (obj: FileType) => {
-      if (obj.type === 'gif') return obj
+    const PromisedMedia = media.map(async (obj) => {
+      if (!isFileType(obj)) return obj
 
       const randomStr = generateRandomString(5)
 
@@ -57,140 +64,110 @@ export const addPost = async (
       return convertedObj
     })
     convertedMedia = await Promise.all(PromisedMedia)
+
+    try {
+      await prisma.post.create({
+        data: {
+          userId: session.user.id,
+          desc: content.toString(),
+          parentPostId: parentPostId ? parseInt(parentPostId) : null,
+          rePostId: repostId ? parseInt(repostId) : null,
+          media: {
+            create: convertedMedia.map((m) => {
+              const baseData = {
+                url: m.url,
+                width: m.width,
+                height: m.height,
+                userId: session.user.id,
+              }
+
+              if ('public_id' in m && m.public_id) {
+                return {
+                  ...baseData,
+                  public_id: m.public_id,
+                  type: 'media',
+                }
+              }
+
+              return {
+                ...baseData,
+                type: 'gif',
+              }
+            }),
+          },
+        },
+      })
+    } catch (error) {}
   }
-  await connectionToDatabase()
+  /*   await connectionToDatabase()
   const mongooseSession = await mongoose.startSession()
 
   mongooseSession.startTransaction({
     readConcern: { level: 'snapshot' },
     writeConcern: { w: 'majority' },
-  })
-  try {
-    const newPost = await (
-      await Post.create(
-        [
-          {
-            type,
-            content,
-            creator: session.user.id,
-            media: convertedMedia || [],
-            quotePost: repostId,
-          },
-        ],
-        { session: mongooseSession }
-      )
-    )[0].populate('creator')
-    if (type === 'comment' && parentPostId) {
-      await Post.findByIdAndUpdate(
-        parentPostId,
-        {
-          $push: { comments: newPost._id },
-        },
-        { session: mongooseSession }
-      )
-    }
-    if (type === 'quote') {
-      await Post.findByIdAndUpdate(
-        repostId,
-        { $push: { reposts: newPost._id } },
-        { session: mongooseSession }
-      )
-    }
+  }) */
 
-    if (!newPost) {
-      return
-    }
-
-    await User.findByIdAndUpdate(
-      newPost.creator._id,
-      {
-        $push: { posts: newPost._id },
-      },
-      { new: true, session: mongooseSession }
-    )
-
-    await mongooseSession.commitTransaction()
-  } catch (error) {
-    await mongooseSession.abortTransaction()
-  } finally {
-    await mongooseSession.endSession()
-  }
   revalidatePath('/home')
 
   return
 }
 
-export const toggleLikePost = async (postId: string) => {
+export const likePost = async (postId: number) => {
   const session = await auth()
   if (!session || !session.user) {
-    return
+    return { success: false }
   }
 
-  const post = await Post.findOne({ _id: postId })
-  if (!post) {
-    return
-  }
-  const heart = post.hearts.find((heart: string) => heart == session.user.id)
-
-  if (heart) {
-    post.hearts = post.hearts.filter(
-      (heart: string) => heart != session.user.id
-    )
-
-    await post.save()
-    /* revalidatePath('/') */
-    return
-  }
-
-  /* const objectId = new mongoose.Types.ObjectId(session.user.id) */
-
-  post.hearts.push(session.user.id)
-  await post.save()
-
-  /* revalidatePath('/') */
-  return
-}
-export const toggleRepostPost = async (postId: string) => {
-  const session = await auth()
-  await connectionToDatabase()
-  if (!session || !session.user) {
-    return
-  }
-
-  const post = await Post.findOne({ _id: postId })
-
-  if (String(session.user.id) === String(post.creator)) {
-    return
-  }
-
-  if (!post) {
-    return
-  }
-  const reposted = post.reposts.find(
-    (repostId: string) => repostId == session.user.id
-  )
-
-  if (reposted) {
-    post.reposts = post.reposts.filter(
-      (repostId: string) => repostId != session.user.id
-    )
-
-    console.log(reposted)
-    await User.findByIdAndUpdate(session.user.id, {
-      $pull: { posts: post.id },
+  /* const post = await Post.findOne({ _id: postId }) */
+  const userId = session.user.id
+  try {
+    const existingLike = await prisma.like.findFirst({
+      where: {
+        userId: userId,
+        postId: postId,
+      },
     })
-    await post.save()
-    /* revalidatePath('/') */
-    return
+
+    if (existingLike) {
+      await prisma.like.delete({
+        where: { id: existingLike.id },
+      })
+    } else {
+      await prisma.like.create({
+        data: {
+          userId,
+          postId,
+        },
+      })
+    }
+  } catch (error) {
+    return { success: false }
   }
 
-  /* const objectId = new mongoose.Types.ObjectId(session.user.id) */
+  return { success: true }
+}
+export const rePost = async (postId: number) => {
+  const session = await auth()
 
-  post.reposts.push(session.user.id)
+  if (!session || !session.user) return
+  const userId = session.user.id
+  const existingRePost = await prisma.post.findFirst({
+    where: {
+      userId: userId,
+      rePostId: postId,
+    },
+  })
 
-  await User.findByIdAndUpdate(session.user.id, { $push: { posts: post._id } })
-  await post.save()
-
-  /* revalidatePath('/') */
-  return
+  if (existingRePost) {
+    await prisma.post.delete({
+      where: { id: existingRePost.id },
+    })
+  } else {
+    await prisma.post.create({
+      data: {
+        userId,
+        rePostId: postId,
+      },
+    })
+  }
 }

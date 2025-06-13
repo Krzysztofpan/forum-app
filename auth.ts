@@ -5,6 +5,7 @@ import connectionToDatabase from './lib/mongoose'
 
 import { comparePassword } from './lib/utils/bcryptUtils'
 import { MongoDBAdapter } from '@auth/mongodb-adapter'
+import { PrismaAdapter } from '@auth/prisma-adapter'
 import type { NextAuthConfig } from 'next-auth'
 import NextAuth from 'next-auth'
 import { authConfig } from './auth.config'
@@ -12,6 +13,7 @@ import client from './lib/dbclient'
 import type { DefaultSession } from 'next-auth'
 import type {} from 'next-auth/jwt'
 import User from './models/User'
+import { prisma } from './prisma'
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {
@@ -41,7 +43,7 @@ const config = {
     strategy: 'jwt' as const,
     maxAge: 30 * 24 * 60 * 60 * 1000,
   },
-  adapter: MongoDBAdapter(client),
+  adapter: PrismaAdapter(prisma),
   trustHost: true,
   providers: [
     CredentialsProvider({
@@ -52,10 +54,18 @@ const config = {
       },
       async authorize(credentials) {
         if (!credentials.email || !credentials.password) return null
-        await connectionToDatabase()
-        const user = await User.findOne({
+
+        /* const user = await User.findOne({
           email: credentials?.email,
-        }).select('+password')
+        }).select('+password') */
+
+        const user = await prisma.user.findUnique({
+          where: {
+            email: credentials.email as string,
+          },
+          select: { id: true, email: true, password: true, username: true },
+        })
+
         if (!user) throw new Error('Wrong Email')
         const passwordMatch = await comparePassword(
           credentials.password as string,
@@ -65,7 +75,7 @@ const config = {
 
         return {
           id: user.id,
-          name: user.name,
+          name: user.username,
           email: user.email,
         }
       },

@@ -1,3 +1,4 @@
+import { auth } from '@/auth'
 import AddPostComponent from '@/components/home/AddPostComponent'
 import Modal from '@/components/Modal'
 import { DialogContent, DialogTitle } from '@/components/ui/dialog'
@@ -10,6 +11,12 @@ const ModalPostCreate = async ({
 }: {
   searchParams: Promise<{ repost?: string }>
 }) => {
+  const session = await auth()
+
+  if (!session || !session.user) {
+    return
+  }
+
   const repostId = (await searchParams).repost
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${repostId}`,

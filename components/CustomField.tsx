@@ -11,12 +11,12 @@ const CustomField = ({
   form: UseFormReturn<{
     email: string
     username: string
-    userAt: string
+    displayName: string
     password: string
     passwordConfirm: string
   }>
   placeholder: string
-  name: 'email' | 'username' | 'password' | 'passwordConfirm' | 'userAt'
+  name: 'email' | 'username' | 'password' | 'passwordConfirm' | 'displayName'
   type?: 'text' | 'password'
 }) => {
   return (

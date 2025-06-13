@@ -6,25 +6,27 @@ import Image from 'next/image'
 
 const UserView = ({
   username,
-  userAt,
+  userDisplayName,
   userId,
   isFollowed,
   userAvatar,
 }: {
   username: string
-  userAt: string
+  userDisplayName: string
   userId?: string
   isFollowed?: boolean
   userAvatar?: string
 }) => {
+  console.log(userAvatar)
+
   return (
     <div className="grid grid-cols-[40px_1fr] gap-4">
-      <Link href={`/${userAt}`}>
+      <Link href={`/${username}`}>
         {userAvatar ? (
           <Image
             src={userAvatar}
-            alt={`${userAt} avatar`}
-            className="rounded-full"
+            alt={`${username} avatar`}
+            className="rounded-full aspect-square"
             width={40}
             height={40}
           />
@@ -34,15 +36,16 @@ const UserView = ({
       </Link>
       <div className="flex justify-between">
         <div className="flex flex-col justify-start ">
-          <Link href={`/${userAt}`}>
-            <p className="font-bold truncate  ">{username}</p>
+          <Link href={`/${username}`}>
+            <p className="font-bold truncate  ">{userDisplayName}</p>
           </Link>
-          <Link href={`/${userAt}`}>
-            <p className="text-foreground/50 truncate ">@{userAt}</p>
+          <Link href={`/${username}`}>
+            <p className="text-foreground/50 truncate ">@{username}</p>
           </Link>
         </div>
         {!isFollowed && userId && (
           <UserFollow
+            username={username}
             isFollowed={isFollowed as boolean}
             userId={String(userId)}
           />

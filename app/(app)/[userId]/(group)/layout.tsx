@@ -28,20 +28,24 @@ const Layout = async ({
   const user = await res.json()
   return (
     <div className="flex gap-8 max-w-[600px] lg:max-w-[990px] w-full  relative">
-      <div className="max-w-[600px] w-full border-[1px] ">
+      <div className="max-w-[600px] w-full  ">
         <StickyTopComponent>
           <BackComponent>
             <div className="flex flex-col">
-              <span className="font-bold wrap-break-word">{user.username}</span>
-              <span className="text-sm text-foreground/50">@{user.userAt}</span>
+              <span className="font-bold wrap-break-word">
+                {user.displayName}
+              </span>
+              <span className="text-sm text-foreground/50">
+                @{user.username}
+              </span>
             </div>
           </BackComponent>
           <div className="grid grid-cols-2">
-            <SpecialButton link={`/${user.userAt}/followers`}>
+            <SpecialButton link={`/${user.username}/followers`}>
               Followers
             </SpecialButton>
 
-            <SpecialButton link={`/${user.userAt}/following`}>
+            <SpecialButton link={`/${user.username}/following`}>
               Following
             </SpecialButton>
           </div>

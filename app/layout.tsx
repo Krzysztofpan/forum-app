@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import './globals.css'
-import connectionToDatabase from '@/lib/mongoose'
+
 import { ThemeProvider } from 'next-themes'
 import { Toaster } from 'sonner'
 
@@ -15,8 +15,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  await connectionToDatabase()
-
   return (
     <>
       <html lang="en" suppressHydrationWarning>

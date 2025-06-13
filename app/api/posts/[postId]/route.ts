@@ -1,43 +1,56 @@
-import { NextResponse } from 'next/server'
-import mongoose from 'mongoose'
-import Post from '@/models/Post'
-import connectionToDatabase from '@/lib/mongoose'
+import { auth } from '@/auth'
+import { prisma } from '@/prisma'
 
-// Obsługa metody GET
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ postId: string }> }
-) {
-  try {
-    await connectionToDatabase()
-    const postId = (await params).postId
-    if (!mongoose.Types.ObjectId.isValid(postId)) {
-      return NextResponse.json({ error: 'Invalid post ID' }, { status: 400 })
+import { NextResponse } from 'next/server'
+
+export const GET = auth(
+  async (
+    { auth },
+
+    { params }: { params: Promise<{ postId: number }> }
+  ) => {
+    const { postId } = await params
+    /* 
+    if (!session || !session.user) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    } */
+
+    const userId = auth?.user.id
+
+    const postIdNumber = Number(postId)
+    if (isNaN(postIdNumber) || postIdNumber <= 0) {
+      return NextResponse.json({ message: 'Invalid postId' }, { status: 400 })
     }
 
-    const post = await Post.findByIdAndUpdate(
-      postId,
-      { $inc: { view: 1 } },
-      { new: true }
-    )
-      .populate('creator')
-      .populate({
-        path: 'comments',
-        populate: [{ path: 'creator' }, { path: 'comments' }],
-      })
-      .populate({
-        path: 'quotePost',
-        populate: {
-          path: 'creator',
+    const postIncludeQuery = {
+      user: { select: { displayName: true, username: true, img: true } },
+      _count: { select: { likes: true, rePosts: true, comments: true } },
+      likes: { where: { userId: userId }, select: { id: true } },
+      rePosts: { where: { userId: userId }, select: { id: true } },
+      saves: { where: { userId: userId }, select: { id: true } },
+    }
+
+    try {
+      const post = await prisma.post.findUnique({
+        where: { id: postIdNumber },
+        include: {
+          rePost: {
+            include: postIncludeQuery,
+          },
+          ...postIncludeQuery,
+          media: {},
+          user: {},
         },
       })
 
-    if (!post) {
-      return NextResponse.json({ error: 'Post not found' }, { status: 404 })
-    }
+      if (!post) {
+        return NextResponse.json({ message: 'Post not found' }, { status: 404 })
+      }
 
-    return NextResponse.json(post)
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ ...post })
+    } catch (error) {
+      console.error(error)
+      return NextResponse.json({ message: 'Server error' }, { status: 500 })
+    }
   }
-}
+)

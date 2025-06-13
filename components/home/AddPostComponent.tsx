@@ -3,8 +3,7 @@ import { CgProfile } from 'react-icons/cg'
 import { Textarea } from '../ui/textarea'
 import { Image as ImageEmoji, Smile } from 'lucide-react'
 import { MdOutlineGifBox } from 'react-icons/md'
-import { CiCircleList, CiLocationOn } from 'react-icons/ci'
-import { RiCalendarScheduleLine, RiUserLocationFill } from 'react-icons/ri'
+
 import { Button } from '../ui/button'
 import EmojiPicker, {
   EmojiClickData,
@@ -27,11 +26,11 @@ import CircularProgressBar from '../CircularProgressBar'
 import { addPost } from '@/lib/actions/post.action'
 import { useEffect, useTransition } from 'react'
 import Spinner from '../Spinner'
-import { PostType } from '@/models/Post'
 
 import RepostedPost from '../post/RepostedPost'
 import Image from 'next/image'
 import { useModalOpen } from '@/context/ModalContext'
+import { PostWithDetails } from '@/types'
 
 export type FileType = {
   url: string
@@ -55,7 +54,7 @@ const AddPostComponent = ({
   placeholder?: string
   type: 'post' | 'comment' | 'quote'
   className?: string
-  repostPost?: PostType
+  repostPost?: PostWithDetails
   avatar?: string
 }) => {
   const {
@@ -128,7 +127,7 @@ const AddPostComponent = ({
       <div className="mt-2 row-span-4">
         {avatar ? (
           <Image
-            className="w-full rounded-full"
+            className="w-full rounded-full aspect-square"
             src={avatar}
             alt="user avatar"
             width={40}
@@ -156,7 +155,13 @@ const AddPostComponent = ({
         {isPoll && <PollComponent />}
       </div>
       {media.length > 0 && <MediaContainer />}
-      {repostPost && <RepostedPost media={media} repostPost={repostPost} />}
+      {repostPost && (
+        <RepostedPost
+          media={media}
+          repostPost={repostPost}
+          className="h-[290px]"
+        />
+      )}
       {type === 'post' ? <hr className="mr-4" /> : null}
       <div className="flex justify-between mr-4 mt-1">
         <div className="flex">

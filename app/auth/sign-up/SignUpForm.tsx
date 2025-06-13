@@ -19,9 +19,9 @@ const SignUpForm = () => {
   const form = useForm<z.infer<typeof SignUpFormSchema>>({
     resolver: zodResolver(SignUpFormSchema),
     defaultValues: {
+      displayName: '',
       username: '',
       email: '',
-      userAt: '',
       password: '',
       passwordConfirm: '',
     },
@@ -40,8 +40,12 @@ const SignUpForm = () => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <CustomField form={form} placeholder="Email" name="email" />
+        <CustomField
+          form={form}
+          placeholder="Display name"
+          name="displayName"
+        />
         <CustomField form={form} placeholder="Username" name="username" />
-        <CustomField form={form} placeholder="userAt" name="userAt" />
         <CustomField
           form={form}
           placeholder="password"

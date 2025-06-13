@@ -8,11 +8,11 @@ export const SignUpFormSchema = z
       .trim()
       .min(3, 'username has at least 3 characters')
       .max(30, 'username  has at most 3 characters'),
-    userAt: z
+    displayName: z
       .string()
       .trim()
-      .min(3, 'userAt has at least 3 characters')
-      .max(30, 'userAt  has at most 3 characters'),
+      .min(3, 'display name has at least 3 characters')
+      .max(30, 'display name  has at most 3 characters'),
     password: z
       .string()
       .trim()

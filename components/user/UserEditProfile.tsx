@@ -5,7 +5,7 @@ import { Button } from '../ui/button'
 import Image from 'next/image'
 import { DialogClose, DialogContent, DialogTitle } from '../ui/dialog'
 import { ArrowLeft, X } from 'lucide-react'
-import { userType } from '@/models/User'
+
 import { Dispatch, SetStateAction, useState } from 'react'
 
 import { getCroppedImg } from '@/lib/utils/utlisFncs'
@@ -17,7 +17,24 @@ import { updateUserInfo, uploadUserImage } from '@/lib/actions/user.action'
 import { useRouter } from 'next/navigation'
 import { useIsMobile } from '@/hooks/use-mobile'
 
-const UserEditProfile = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
+const UserEditProfile = ({
+  user,
+}: {
+  user: {
+    id: string
+    email: string
+    username: string
+    displayName: string
+    password: string
+    bio: string | null
+    location: string | null
+    job: string | null
+    website: string | null
+    img: string | null
+    cover: string | null
+    createdAt: Date
+  }
+}) => {
   const router = useRouter()
 
   const [edit, setEdit] = useState<'avatar' | 'banner'>('avatar')
@@ -55,7 +72,7 @@ const UserEditProfile = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
     y: 0,
   })
   const [croppedBannerUrl, setCroppedBannerUrl] = useState<string | null>(
-    user.banner || ''
+    user.cover || ''
   )
   const [croppedAvatarUrl, setCroppedAvatarUrl] = useState<string | null>(null)
   const [croppedBannerDataURL, setCroppedBannerDataURL] = useState<
@@ -93,9 +110,6 @@ const UserEditProfile = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
       setCroppedImageDataURL(dataURL)
       setCroppedImageUrl(croppedUrl)
 
-      // Jeśli chcesz zapisać plik lokalnie:
-
-      // Lub przesłać croppedBlob do backendu jako plik
       setIsCrop(false)
     } catch (e) {
       /*  console.error(e) */
@@ -128,7 +142,7 @@ const UserEditProfile = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
       await updateUserInfo(name, bio, website)
     }
 
-    return router.replace(`/${user.userAt}`)
+    return router.replace(`/${user.username}`)
   }
 
   return (
@@ -191,7 +205,7 @@ const UserEditProfile = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
               <div className="translate-y-[-50%] mx-4 ">
                 <div className="relative w-fit border-[4px] rounded-full border-black">
                   <Image
-                    src={croppedAvatarUrl || user.avatar || '/logo-sm.png'}
+                    src={croppedAvatarUrl || user.img || '/logo-sm.png'}
                     alt="avatar"
                     width={112}
                     height={112}

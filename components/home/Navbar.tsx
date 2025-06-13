@@ -17,16 +17,16 @@ import {
 } from '../ui/dropdown-menu'
 import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu'
 import { logout } from '@/lib/actions/auth.action'
-import { userType } from '@/models/User'
 
 import useScroll from '@/hooks/useScroll'
+import { User } from '@prisma/client'
 
-const HomeNavbar = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
+const HomeNavbar = ({ user }: { user: User }) => {
   const path = usePathname()
   const isScrolled = useScroll()
   return (
     <nav
-      className={`flex bg-background pb-1 border-t-[1px] xs:pt-2 xs:pb-8 xs:h-screen xs:flex-col justify-between z-50 ${
+      className={`flex bg-background pb-1 border-t-[1px] xs:pt-2 xs:pb-8 xs:h-screen xs:flex-col justify-between z-50 sm:z-10 ${
         isScrolled ? 'opacity-30 xs:opacity-100' : ''
       }`}
     >
@@ -81,15 +81,15 @@ const HomeNavbar = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
           </div>
         </Link>
         <Link
-          href={`/${user.userAt}`}
+          href={`/${user.username}`}
           className="group xxl:w-full cursor-pointer"
         >
           <div
             className={`flex gap-5 text-xl items-center  px-4 py-3 hover:bg-foreground/10  rounded-full group-hover:bg-foreground/10 w-fit  ${
-              path === `/${String(user.userAt)}` ? 'font-bold' : null
+              path === `/${String(user.username)}` ? 'font-bold' : null
             }`}
           >
-            {path === `/${String(user.userAt)}` ? (
+            {path === `/${String(user.username)}` ? (
               <FaUser className="sm:scale-130" />
             ) : (
               <FaRegUser className="sm:scale-130" />
@@ -120,15 +120,15 @@ const HomeNavbar = ({ user }: { user: Omit<userType, 'createdAt'> }) => {
       <div className="hidden xs:block  xxl:grid xxl:grid-cols-[1fr_20px]">
         <div className="flex items-center justify-center xxl:grid xxl:grid-cols-[40px_190px] xxl:gap-3 ">
           <Image
-            src={user.avatar || '/logo.png'}
+            src={user.img || '/logo.png'}
             alt="logo"
             className="rounded-full aspect-square"
             width={40}
             height={40}
           />
           <div className="xxl:flex flex-col hidden ">
-            <span className="font-bold">{user.username}</span>
-            <span className="text-foreground/50">@{user.userAt}</span>
+            <span className="font-bold">{user.displayName}</span>
+            <span className="text-foreground/50">@{user.username}</span>
           </div>
         </div>
         <div className="hidden xxl:flex items-center justify-center ">

@@ -1,128 +1,48 @@
 'use server'
 import { auth } from '@/auth'
-import User from '@/models/User'
-import mongoose from 'mongoose'
+
 import { revalidatePath } from 'next/cache'
 import { generateRandomString } from '../utils/generateRadomString'
 import cloudinary from '../cloudinary'
 import { UploadApiResponse } from 'cloudinary'
-import connectionToDatabase from '../mongoose'
 
-export const follow = async (userId: string) => {
+import { prisma } from '@/prisma'
+
+export const followUser = async (targetUserId: string, username: string) => {
   const session = await auth()
 
-  if (!session || !session?.user) {
-    return {
-      success: false,
-      message: 'User have to be authenticated to do this action.',
-    }
+  if (!session || !session.user) return
+
+  const userId = session.user.id
+
+  const existingFollow = await prisma.follow.findFirst({
+    where: {
+      followerId: userId,
+      followingId: targetUserId,
+    },
+  })
+
+  if (existingFollow) {
+    await prisma.follow.delete({
+      where: {
+        id: existingFollow.id,
+      },
+    })
+  } else {
+    await prisma.follow.create({
+      data: {
+        followerId: userId,
+        followingId: targetUserId,
+      },
+    })
   }
 
-  if (userId === session.user.id) {
-    return { success: false, message: `User can't follow himself` }
-  }
-  await connectionToDatabase()
-  const mongooseSession = await mongoose.startSession()
-  mongooseSession.startTransaction()
-  try {
-    const userToFollow = await User.findById(userId).session(mongooseSession)
-    if (!userToFollow) {
-      return { success: false, message: `User does't exists.` }
-    }
-
-    const loggedUser = await User.findById(session.user.id).session(
-      mongooseSession
-    )
-
-    const alreadyFollowed = loggedUser.following.find(
-      (id: mongoose.Types.ObjectId) => String(id) == userToFollow._id
-    )
-
-    if (alreadyFollowed) {
-      return { success: false, message: 'User is already followed.' }
-    }
-    loggedUser.following.push(userToFollow._id)
-
-    await loggedUser.save({ session: mongooseSession })
-    userToFollow.followers.push(session.user.id)
-    await userToFollow.save({ session: mongooseSession })
-    revalidatePath(`/${userToFollow.username}`)
-    await mongooseSession.commitTransaction()
-  } catch (error) {
-    console.log(error)
-
-    await mongooseSession.abortTransaction()
-    return { success: false, message: 'Something went wrong!' }
-  } finally {
-    await mongooseSession.endSession()
-  }
-
-  return { success: true, message: 'Successfully follow User!' }
+  revalidatePath(`/${username}`)
 }
-
-export const unfollow = async (userId: string) => {
-  const session = await auth()
-
-  if (!session || !session?.user) {
-    return {
-      success: false,
-      message: 'User have to be authenticated to do this action.',
-    }
-  }
-
-  if (userId === session.user.id) {
-    return { success: false, message: `User can't unfollow himself` }
-  }
-  await connectionToDatabase()
-  const mongooseSession = await mongoose.startSession()
-  mongooseSession.startTransaction()
-  try {
-    const userToUnfollow = await User.findById(userId).session(mongooseSession)
-    if (!userToUnfollow) {
-      return { success: false, message: `User does't exists.` }
-    }
-
-    const loggedUser = await User.findById(session.user.id).session(
-      mongooseSession
-    )
-
-    const alreadyFollowed = loggedUser.following.find(
-      (id: mongoose.Types.ObjectId) => String(id) != userToUnfollow._id
-    )
-
-    if (alreadyFollowed) {
-      return { success: false, message: 'User is already unfollowed.' }
-    }
-
-    loggedUser.following = loggedUser.following.filter(
-      (id: string) => String(id) !== String(userToUnfollow._id)
-    )
-
-    await loggedUser.save({ session: mongooseSession })
-
-    userToUnfollow.followers = userToUnfollow.followers.filter(
-      (id: string) => String(id) !== String(session.user.id)
-    )
-    await userToUnfollow.save({ session: mongooseSession })
-    revalidatePath(`/${userToUnfollow.username}`)
-    await mongooseSession.commitTransaction()
-  } catch (error) {
-    console.log(error)
-
-    await mongooseSession.abortTransaction()
-    return { success: false, message: 'Something went wrong!' }
-  } finally {
-    await mongooseSession.endSession()
-  }
-
-  return { success: true, message: 'Successfully unfollow User!' }
-}
-
 export const uploadUserImage = async (
   croppedImageDataURL: string,
   imageType: 'banner' | 'avatar'
 ) => {
-  await connectionToDatabase()
   const session = await auth()
   if (!session || !session.user) {
     return null
@@ -141,9 +61,17 @@ export const uploadUserImage = async (
     })) as UploadApiResponse
 
   if (imageType === 'avatar') {
-    await User.findByIdAndUpdate(session.user.id, { avatar: res.secure_url })
+    /* await User.findByIdAndUpdate(session.user.id, { avatar: res.secure_url }) */
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { img: res.secure_url },
+    })
   } else {
-    await User.findByIdAndUpdate(session.user.id, { banner: res.secure_url })
+    /*  await User.findByIdAndUpdate(session.user.id, { banner: res.secure_url }) */
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { cover: res.secure_url },
+    })
   }
 }
 
@@ -156,5 +84,9 @@ export const updateUserInfo = async (
   if (!session || !session.user) {
     return null
   }
-  await User.findByIdAndUpdate(session.user.id, { username, bio, website })
+  /* await User.findByIdAndUpdate(session.user.id, { username, bio, website }) */
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { username, bio, website },
+  })
 }

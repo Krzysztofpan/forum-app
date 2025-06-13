@@ -1,41 +1,43 @@
-import { PostType } from '@/models/Post'
 import StickyTopComponent from '../StickyTopComponent'
 
-import { Dot, Upload } from 'lucide-react'
+import { Dot } from 'lucide-react'
 
 import { enUS } from 'date-fns/locale'
 import { format } from 'date-fns'
 import PostAction from './PostAction'
-import { serializePost } from '@/lib/utils/utlisFncs'
+
 import { auth } from '@/auth'
 import AddPostComponent from '../home/AddPostComponent'
 import PostComponent from '../PostComponent'
 import BackComponent from '../BackComponent'
 import UserView from '../user/UserView'
-import User from '@/models/User'
+
 import MediaPost from '../home/MediaPost'
 import Image from 'next/image'
-import RepostedPost from './RepostedPost'
-import connectionToDatabase from '@/lib/mongoose'
 
-const PostView = async ({ post }: { post: PostType }) => {
+import { Post } from '@/types'
+import { prisma } from '@/prisma'
+
+const PostView = async ({ post }: { post: Post }) => {
   const session = await auth()
   if (!session || !session.user) return
-  await connectionToDatabase()
-  const user = await User.findById(session.user.id)
+
+  /*   const user = await User.findById(session.user.id) */
   const userId = String(session?.user.id)
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      followings: userId ? { where: { followerId: userId } } : undefined,
+    },
+  })
+
+  if (!user) return
   const formattedDate = format(post.createdAt, 'MMMM dd yyyy', {
     locale: enUS,
   })
   const hour = format(post.createdAt, 'HH:mm', {
     locale: enUS,
   })
-
-  const serializedPost = serializePost(post)
-
-  const isFollowed = user.following.some(
-    (id: string) => String(id) == String(post.creator._id)
-  )
 
   return (
     <div className="border-x-[1px] border-solid max-w-[600px] w-full min-h-[100vh]">
@@ -49,13 +51,13 @@ const PostView = async ({ post }: { post: PostType }) => {
 
       <div className="mx-5 space-y-4">
         <UserView
-          userAt={post.creator.userAt}
-          username={post.creator.username}
-          isFollowed={isFollowed}
+          username={post.user.username}
+          userDisplayName={post.user.displayName || post.user.username}
+          isFollowed={!!user.followings.length}
           userId={userId}
-          userAvatar={post.creator.avatar}
+          userAvatar={post.user.img || '/logo-sm.png'}
         />
-        <p className="my-4 text-lg">{post.content}</p>
+        <p className="my-4 text-lg">{post.desc}</p>
 
         {post.media[0] ? (
           post.media.length > 1 ? (
@@ -69,15 +71,15 @@ const PostView = async ({ post }: { post: PostType }) => {
             >
               <Image
                 src={post.media[0].url}
-                alt={`image-${post.media[0].public_id}`}
+                alt={`image-${post.media[0]?.public_id}`}
                 fill
               />
             </div>
           )
         ) : null}
-        {post.type === 'quote' && post.quotePost ? (
-          <RepostedPost media={post.media} repostPost={post.quotePost} />
-        ) : null}
+        {/*  {post.rePost ? (
+          <RepostedPost media={post.media} repostPost={post.rePost} />
+        ) : null} */}
         <div></div>
         <div className="flex text-foreground/50 gap-0">
           {hour} <Dot className="p-0 m-0" /> {formattedDate} <Dot />{' '}
@@ -85,34 +87,28 @@ const PostView = async ({ post }: { post: PostType }) => {
         </div>
         <div className="border-y-[1px] border-border p-3  ">
           <PostAction
-            post={{
-              _id: serializedPost._id,
-              comments: serializedPost.comments,
-              hearts: serializedPost.hearts,
-              reposts: serializedPost.reposts,
-              view: serializedPost.view,
-              creator: String(post.creator._id),
-            }}
-            userId={userId}
-            disabledView={true}
-            specialContent={<Upload size={20} />}
+            username={post.user.username}
+            view={post.view}
+            postId={post.id}
+            count={post._count}
+            isLiked={!!post.likes.length}
+            isRePosted={!!post.rePosts.length}
+            isSaved={!!post.saves.length}
+            /*  specialContent={<Upload size={20} />} */
           />
         </div>
       </div>
+
       <div className="border-b-[1px] border-border">
         <AddPostComponent
           type="comment"
           placeholder="Post your reply"
-          avatar={user.avatar}
+          avatar={user.img || '/logo-sm.png'}
         />
       </div>
       <div>
         {post.comments.map((post) => (
-          <PostComponent
-            key={String(post._id)}
-            post={post}
-            user={post.creator}
-          />
+          <PostComponent key={String(post.id)} post={post} />
         ))}
       </div>
     </div>

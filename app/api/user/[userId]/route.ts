@@ -1,28 +1,42 @@
 import { NextResponse } from 'next/server'
 
-import connectionToDatabase from '@/lib/mongoose'
-import User from '@/models/User'
-import Post, { PostSchema } from '@/models/Post'
-import mongoose from 'mongoose'
+import { prisma } from '@/prisma'
+
 // Obsługa metody GET
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    await connectionToDatabase()
     const userId = (await params).userId
-    //const Post = mongoose.model('Post', PostSchema)
-    const user = await User.findOne({ userAt: userId })
-      .populate({
-        path: 'posts',
-        populate: [
-          { path: 'creator' },
-          { path: 'quotePost', populate: { path: 'creator' } },
-        ],
-      })
-      .populate('followers')
-      .populate('following')
+
+    const user = await prisma.user.findUnique({
+      where: { username: userId },
+      include: {
+        _count: { select: { followers: true, followings: true, posts: true } },
+        followers: { where: { followerId: userId } },
+        followings: { where: { followingId: userId } },
+        posts: {
+          where: { parentPostId: null },
+          include: {
+            user: {},
+            likes: {},
+            rePosts: {},
+            saves: {},
+            _count: { select: { likes: true, rePosts: true } },
+            rePost: {
+              include: {
+                user: {},
+                likes: {},
+                rePosts: {},
+                saves: {},
+                _count: { select: { likes: true, rePosts: true } },
+              },
+            },
+          },
+        },
+      },
+    })
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })

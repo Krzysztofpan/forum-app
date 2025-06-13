@@ -2,6 +2,7 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   /* config options here */
+
   images: {
     domains: ['media.tenor.com'],
     remotePatterns: [
@@ -16,6 +17,7 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '100mb',
     },
   },
+  reactStrictMode: false,
 }
 
 export default nextConfig
