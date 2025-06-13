@@ -1,18 +1,17 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GithubProvider from 'next-auth/providers/github'
 import GoogleProvider from 'next-auth/providers/google'
-import connectionToDatabase from './lib/mongoose'
 
 import { comparePassword } from './lib/utils/bcryptUtils'
-import { MongoDBAdapter } from '@auth/mongodb-adapter'
+
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import type { NextAuthConfig } from 'next-auth'
 import NextAuth from 'next-auth'
 import { authConfig } from './auth.config'
-import client from './lib/dbclient'
+
 import type { DefaultSession } from 'next-auth'
 import type {} from 'next-auth/jwt'
-import User from './models/User'
+
 import { prisma } from './prisma'
 
 declare module 'next-auth' {
