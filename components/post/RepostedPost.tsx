@@ -116,7 +116,7 @@ const RepostedPost = ({
             </div>
             <div
               className={`${
-                repostPost.media.length > 1
+                repostPost.media?.length > 1
                   ? 'grid grid-cols-[100px_1fr] gap-2 '
                   : 'mx-2'
               }`}
