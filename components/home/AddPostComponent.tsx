@@ -12,12 +12,7 @@ import EmojiPicker, {
 } from 'emoji-picker-react'
 import { useAddPostContext } from '@/context/AddPostContext'
 import MediaContainer from './MediaContainer'
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import ButtonWithTooltip from '../ButtonWithTooltip'
 
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
@@ -29,8 +24,11 @@ import Spinner from '../Spinner'
 
 import RepostedPost from '../post/RepostedPost'
 import Image from 'next/image'
-import { useModalOpen } from '@/context/ModalContext'
+
 import { PostWithDetails } from '@/types'
+import { toast } from 'sonner'
+import UserView from '../user/UserView'
+import Link from 'next/link'
 
 export type FileType = {
   url: string
@@ -50,12 +48,14 @@ const AddPostComponent = ({
   className,
   repostPost,
   avatar,
+  parentPost,
 }: {
   placeholder?: string
   type: 'post' | 'comment' | 'quote'
   className?: string
   repostPost?: PostWithDetails
   avatar?: string
+  parentPost?: PostWithDetails
 }) => {
   const {
     media,
@@ -77,24 +77,16 @@ const AddPostComponent = ({
   function handleClickEmoji(emoji: EmojiClickData) {
     setContent(content + emoji.emoji)
   }
-  const { isOpen } = useModalOpen()
-  const params = useParams()
+
   const searchParams = useSearchParams()
   const pathname = usePathname()
   useEffect(() => {
     const gifData = localStorage.getItem('selectedGif')
     if (gifData) {
-      if (isOpen) {
-        if (pathname.includes('/compose/post')) {
-          addMedia(JSON.parse(gifData))
-          localStorage.removeItem('selectedGif')
-        }
-      } else {
-        addMedia(JSON.parse(gifData))
-        localStorage.removeItem('selectedGif')
-      }
+      addMedia(JSON.parse(gifData))
+      localStorage.removeItem('selectedGif')
     }
-  }, [isOpen, addMedia])
+  }, [addMedia])
   async function handleSubmit(formData: FormData) {
     startTransition(async () => {})
     if (!isPoll) {
@@ -104,18 +96,33 @@ const AddPostComponent = ({
       setFirstInput('')
       setSecondInput('')
       setDimensions({ width: 0, height: 0 })
-      if (params && type === 'comment' && params.postId) {
-        await addPost(formData, type, media, params.postId as string)
-        return
-      }
-      if (type === 'quote' && searchParams) {
-        const repost = searchParams.get('repost')
+      const repost = searchParams.get('repost')
+      const parentId = searchParams.get('parentId')
+      const res = await addPost(
+        formData,
+        type,
+        media,
+        parentId || undefined,
+        repost || undefined
+      )
 
-        return addPost(formData, type, media, undefined, repost || undefined)
+      if (res.success) {
+        toast(res.message, {
+          position: 'bottom-center',
+        })
+      } else {
+        toast(res.message, {
+          position: 'bottom-center',
+          style: { color: 'red' },
+        })
       }
 
-      await addPost(formData, type, media)
-      return
+      if (
+        type === 'quote' ||
+        (type === 'comment' && pathname.includes('/compose/post'))
+      ) {
+        return router.back()
+      }
     }
   }
 
@@ -124,18 +131,43 @@ const AddPostComponent = ({
       className={`grid grid-cols-[40px_1fr] mx-2 mt-1 gap-2 ${className}`}
       action={handleSubmit}
     >
+      {parentPost && (
+        <>
+          <div className="col-span-2">
+            <UserView
+              userDisplayName={
+                parentPost.user.displayName || parentPost.user.username
+              }
+              username={parentPost.user.username}
+              userAvatar={parentPost.user.img || '/logo.png'}
+              vertical
+            />
+          </div>
+          <div className="flex items-center justify-center col-span-1">
+            <div className="h-full w-[2px] bg-gray-500"></div>
+          </div>
+          <div>
+            <p className="">{parentPost.desc}</p>
+            <div className="text-foreground/50 py-3 ">
+              Replying to{' '}
+              <Link
+                href={`/${parentPost.user.username}`}
+                className="text-blue-400 cursor-pointer"
+              >
+                @{parentPost.user.username}
+              </Link>
+            </div>
+          </div>
+        </>
+      )}
       <div className="mt-2 row-span-4">
-        {avatar ? (
-          <Image
-            className="w-full rounded-full aspect-square"
-            src={avatar}
-            alt="user avatar"
-            width={40}
-            height={40}
-          />
-        ) : (
-          <CgProfile className="w-full" size={40} />
-        )}
+        <Image
+          className="w-full rounded-full aspect-square"
+          src={avatar || '/logo.png'}
+          alt="user avatar"
+          width={40}
+          height={40}
+        />
       </div>
       <div className="mr-4">
         <Textarea

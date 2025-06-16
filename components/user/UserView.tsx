@@ -10,15 +10,15 @@ const UserView = ({
   userId,
   isFollowed,
   userAvatar,
+  vertical = false,
 }: {
   username: string
   userDisplayName: string
   userId?: string
   isFollowed?: boolean
   userAvatar?: string
+  vertical?: boolean
 }) => {
-  console.log(userAvatar)
-
   return (
     <div className="grid grid-cols-[40px_1fr] gap-4">
       <Link href={`/${username}`}>
@@ -34,8 +34,12 @@ const UserView = ({
           <FaCircleUser size={40} />
         )}
       </Link>
-      <div className="flex justify-between">
-        <div className="flex flex-col justify-start ">
+      <div className={`flex justify-between`}>
+        <div
+          className={`flex ${
+            vertical ? 'flex-row gap-2' : 'flex-col'
+          }  justify-start `}
+        >
           <Link href={`/${username}`}>
             <p className="font-bold truncate  ">{userDisplayName}</p>
           </Link>

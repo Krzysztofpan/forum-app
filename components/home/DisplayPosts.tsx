@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/sidebar'
 import Image from 'next/image'
 import { ResponsiveSidebar } from '../ResponsiveSidebar'
+import { redirect } from 'next/navigation'
 const DisplayPosts = ({ avatar }: { avatar: string | null }) => {
   const [displayPosts, setDisplayPosts] = useState<'For you' | 'Following'>(
     'For you'
@@ -55,7 +56,9 @@ const DisplayPosts = ({ avatar }: { avatar: string | null }) => {
               : ''
           }`}
           variant="ghost"
-          onClick={() => setDisplayPosts('Following')}
+          onClick={() => {
+            setDisplayPosts('Following')
+          }}
         >
           Following
         </Button>

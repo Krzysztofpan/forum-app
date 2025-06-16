@@ -10,6 +10,8 @@ import { PiBookmarkSimple } from 'react-icons/pi'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { PenLine } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useModalOpen } from '@/context/ModalContext'
 
 const PostAction = ({
   postId,
@@ -34,6 +36,8 @@ const PostAction = ({
     isRePosted,
     isSaved,
   })
+
+  const router = useRouter()
   const [pending, startTransition] = useTransition()
   const likeAction = () => {
     startTransition(async () => {
@@ -93,9 +97,18 @@ const PostAction = ({
 
   return (
     <div className="flex justify-between text-foreground/50 items-end">
-      <span className="flex gap-1 items-center">
-        <FaRegComment /> {count.comments}
-      </span>
+      <Link
+        className="flex items-center cursor-pointer hover:text-blue-500 group"
+        href={`/compose/post?parentId=${postId}`}
+        onClick={(e) => {
+          e.stopPropagation()
+        }}
+      >
+        <span className="group-hover:bg-blue-500/30 rounded-full  p-2">
+          <FaRegComment />
+        </span>{' '}
+        {count.comments}
+      </Link>
 
       <Popover>
         <PopoverTrigger

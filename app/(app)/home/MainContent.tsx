@@ -57,7 +57,7 @@ const MainContent = async () => {
       },
       ...postIncludeQuery,
     },
-    take: 3,
+    take: 10,
     skip: 0,
     orderBy: { createdAt: 'desc' },
   })

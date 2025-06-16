@@ -98,7 +98,6 @@ const PostView = async ({ post }: { post: Post }) => {
           />
         </div>
       </div>
-
       <div className="border-b-[1px] border-border">
         <AddPostComponent
           type="comment"
@@ -106,6 +105,7 @@ const PostView = async ({ post }: { post: Post }) => {
           avatar={user.img || '/logo-sm.png'}
         />
       </div>
+
       <div>
         {post.comments.map((post) => (
           <PostComponent key={String(post.id)} post={post} />

@@ -5,6 +5,8 @@ import { auth } from '@/auth'
 
 import { prisma } from '@/prisma'
 import InfiniteFeed from '@/components/home/InfiniteFeed'
+import { Suspense } from 'react'
+import Spinner from '@/components/Spinner'
 
 const MainApp = async () => {
   const session = await auth()
@@ -19,7 +21,13 @@ const MainApp = async () => {
       <DisplayPosts avatar={user.img} />
       <AddPostComponent type="post" avatar={user?.img || undefined} />
       <div className="border-b-[1px] border-b-solid mt-2"></div>
-      <MainContent />
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center">{<Spinner />}</div>
+        }
+      >
+        <MainContent />
+      </Suspense>
       <InfiniteFeed />
     </div>
   )

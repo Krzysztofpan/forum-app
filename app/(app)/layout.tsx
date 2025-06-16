@@ -32,6 +32,7 @@ const AppLayout = async ({
   return (
     <QueryProvider>
       <ModalContextProvider>
+        {modal}
         <div className="flex flex-col-reverse xs:flex-row xs:max-w-screen-md  lg:max-w-screen-lg xl:max-w-screen-xl xxl:max-w-screen-xxl mx-auto xl:justify-between">
           <div className="xxl:px-8 xs:h-screen sticky bottom-0 xs:top-0 z-50">
             <HomeNavbar user={user} />
@@ -44,7 +45,6 @@ const AppLayout = async ({
             <RightBar />
           </div>
         </div>
-        {modal}
       </ModalContextProvider>
     </QueryProvider>
   )

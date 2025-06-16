@@ -5,6 +5,7 @@ import { DialogOverlay } from '@/components/ui/dialog'
 import UserEditProfile from '@/components/user/UserEditProfile'
 
 import { prisma } from '@/prisma'
+import { Suspense } from 'react'
 
 const Page = async () => {
   const session = await auth()
@@ -19,7 +20,9 @@ const Page = async () => {
     <Modal>
       <DialogOverlay className="bg-gray-500/50" />
 
-      <UserEditProfile user={user} />
+      <Suspense>
+        <UserEditProfile user={user} />
+      </Suspense>
     </Modal>
   )
 }

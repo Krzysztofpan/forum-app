@@ -25,17 +25,23 @@ export const addPost = async (
   media?: (FileType | GifType)[],
   parentPostId?: string,
   repostId?: string
-) => {
+): Promise<{ success: boolean; message: string }> => {
   const session = await auth()
 
   if (!session?.user || !session.user.id) {
-    return
+    return {
+      success: false,
+      message: 'user has to be authenticated to do this action',
+    }
   }
 
   const content = formData.get('content')
   let convertedMedia
   if (!content) {
-    return
+    return {
+      success: false,
+      message: 'post must have content',
+    }
   }
   if (media) {
     const PromisedMedia = media.map(async (obj) => {
@@ -97,19 +103,25 @@ export const addPost = async (
           },
         },
       })
-    } catch (error) {}
+      revalidatePath('/home')
+      return {
+        success: true,
+        message: `you are successfully added ${
+          type === 'comment' ? 'comment' : type === 'post' ? 'post' : 'rePost'
+        }`,
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Something went wrong!',
+      }
+    }
   }
-  /*   await connectionToDatabase()
-  const mongooseSession = await mongoose.startSession()
 
-  mongooseSession.startTransaction({
-    readConcern: { level: 'snapshot' },
-    writeConcern: { w: 'majority' },
-  }) */
-
-  revalidatePath('/home')
-
-  return
+  return {
+    success: false,
+    message: 'Something went wrong!',
+  }
 }
 
 export const likePost = async (postId: number) => {

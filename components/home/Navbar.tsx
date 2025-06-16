@@ -89,7 +89,8 @@ const HomeNavbar = ({ user }: { user: User }) => {
               path === `/${String(user.username)}` ? 'font-bold' : null
             }`}
           >
-            {path === `/${String(user.username)}` ? (
+            {path.includes(`/${String(user.username)}`) &&
+            !path.includes('status') ? (
               <FaUser className="sm:scale-130" />
             ) : (
               <FaRegUser className="sm:scale-130" />

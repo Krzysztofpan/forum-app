@@ -3,13 +3,14 @@ import AddPostComponent from '@/components/home/AddPostComponent'
 import Modal from '@/components/Modal'
 import { DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { AddPostContextProvider } from '@/context/AddPostContext'
+import { prisma } from '@/prisma'
 
 import { notFound } from 'next/navigation'
 
 const ModalPostCreate = async ({
   searchParams,
 }: {
-  searchParams: Promise<{ repost?: string }>
+  searchParams: Promise<{ repost?: string; parentId?: string }>
 }) => {
   const session = await auth()
 
@@ -17,30 +18,34 @@ const ModalPostCreate = async ({
     return
   }
 
+  const userAvatar = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { img: true },
+  })
+
   const repostId = (await searchParams).repost
+  const parentId = (await searchParams).parentId
+
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${repostId}`,
-    {
-      // fetch na serwerze w Next.js domyślnie jest bez cache,
-      // ale możesz dodać np. revalidate jeśli chcesz ISR
-    }
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${repostId || parentId}`
   )
   if (!res.ok) {
-    // obsłuż błąd (np. 404)
     return notFound()
   }
 
-  const repostedPost = await res.json()
+  const Post = await res.json()
   return (
     <AddPostContextProvider>
       <Modal>
         <DialogContent className=" p-0  max-h-[800px] overflow-y-auto overflow-x-hidden sm:max-w-[600px] md:min-w-[600px]">
           <DialogTitle></DialogTitle>
           <AddPostComponent
-            type="quote"
+            type={repostId ? 'quote' : 'comment'}
+            avatar={userAvatar?.img || '/logo.png'}
             placeholder="Add a comment"
             className="mx-0 w-full"
-            repostPost={repostedPost}
+            repostPost={repostId && Post}
+            parentPost={parentId && Post}
           />
         </DialogContent>
       </Modal>

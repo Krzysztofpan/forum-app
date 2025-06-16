@@ -11,9 +11,10 @@ import { Ellipsis, Search } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import React, { ReactNode } from 'react'
+import React, { ReactNode, Suspense } from 'react'
 import { Link as LinkIcon } from 'lucide-react'
 import { prisma } from '@/prisma'
+import Spinner from '@/components/Spinner'
 export default async function UserLayout({
   children,
   params,
@@ -134,7 +135,17 @@ export default async function UserLayout({
         </div>
       </div>
       <UserDisplayPostsNavbar userId={user.username} />
-      <main className="border-t-[1px] border-border">{children}</main>
+      <main className="border-t-[1px] border-border">
+        <Suspense
+          fallback={
+            <div className="flex justify-center items-center mt-2">
+              <Spinner />
+            </div>
+          }
+        >
+          {children}
+        </Suspense>
+      </main>
     </div>
   )
 }
