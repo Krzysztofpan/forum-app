@@ -77,7 +77,7 @@ const HomeNavbar = ({ user }: { user: User }) => {
             ) : (
               <GoBell className="sm:scale-130" />
             )}
-            <span className="hidden xxl:inline">Notifications</span>
+            <span className="hidden xxl:inline">Notifications</span> w
           </div>
         </Link>
         <Link
