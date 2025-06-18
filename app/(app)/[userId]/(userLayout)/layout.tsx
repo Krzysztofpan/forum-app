@@ -32,13 +32,14 @@ export default async function UserLayout({
 
     include: {
       _count: { select: { posts: true, followings: true, followers: true } },
-      followers: { where: { followerId: session.user.id } },
+      followers: { where: { followingId: session.user.id } },
     },
   })
+
   if (!user) return
   /* const account = await User.findById(session.user.id) */
 
-  const isFollowed = !!user.followers
+  const isFollowed = user.followers.length > 0
 
   return (
     <div className="  min-h-[100vh] relative">

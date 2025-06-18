@@ -23,7 +23,7 @@ export const addPost = async (
   formData: FormData,
   type: string,
   media?: (FileType | GifType)[],
-  parentPostId?: string,
+  parentPostId?: string | number,
   repostId?: string
 ): Promise<{ success: boolean; message: string }> => {
   const session = await auth()
@@ -43,6 +43,8 @@ export const addPost = async (
       message: 'post must have content',
     }
   }
+  console.log(content)
+
   if (media) {
     const PromisedMedia = media.map(async (obj) => {
       if (!isFileType(obj)) return obj
@@ -72,12 +74,12 @@ export const addPost = async (
     convertedMedia = await Promise.all(PromisedMedia)
 
     try {
-      await prisma.post.create({
+      const newPost = await prisma.post.create({
         data: {
           userId: session.user.id,
           desc: content.toString(),
-          parentPostId: parentPostId ? parseInt(parentPostId) : null,
-          rePostId: repostId ? parseInt(repostId) : null,
+          parentPostId: parentPostId ? Number(parentPostId) : null,
+          rePostId: repostId ? Number(repostId) : null,
           media: {
             create: convertedMedia.map((m) => {
               const baseData = {
@@ -103,6 +105,31 @@ export const addPost = async (
           },
         },
       })
+      const hashtags = newPost.desc
+        ?.split(' ')
+        .filter((text) => text.includes('#'))
+
+      if (hashtags) {
+        hashtags.forEach(async (hashtag) => {
+          const hashtagExists = await prisma.hashtag.findFirst({
+            where: { name: hashtag },
+          })
+          if (!hashtagExists) {
+            const newHashtag = await prisma.hashtag.create({
+              data: {
+                name: hashtag,
+              },
+            })
+            await prisma.postHashtag.create({
+              data: { postId: newPost.id, tagId: newHashtag.id },
+            })
+          } else {
+            await prisma.postHashtag.create({
+              data: { postId: newPost.id, tagId: hashtagExists.id },
+            })
+          }
+        })
+      }
       revalidatePath('/home')
       return {
         success: true,
@@ -111,6 +138,8 @@ export const addPost = async (
         }`,
       }
     } catch (error) {
+      console.log(error)
+
       return {
         success: false,
         message: 'Something went wrong!',

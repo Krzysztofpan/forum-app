@@ -41,7 +41,7 @@ const AppLayout = async ({
           <div className="flex-1 max-w-[600px] lg:max-w-lg lg:min-w-[600px] xs:border-x-[1px] xs:border-borderGray">
             {children}
           </div>
-          <div className="hidden lg:flex h-screen ml-4 md:ml-8 flex-1">
+          <div className="hidden lg:flex h-screen ml-4 md:ml-8 flex-1 sticky top-0">
             <RightBar />
           </div>
         </div>

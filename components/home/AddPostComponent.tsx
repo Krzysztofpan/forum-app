@@ -49,12 +49,14 @@ const AddPostComponent = ({
   repostPost,
   avatar,
   parentPost,
+  parentIdProp,
 }: {
   placeholder?: string
   type: 'post' | 'comment' | 'quote'
   className?: string
   repostPost?: PostWithDetails
   avatar?: string
+  parentIdProp?: number
   parentPost?: PostWithDetails
 }) => {
   const {
@@ -97,7 +99,7 @@ const AddPostComponent = ({
       setSecondInput('')
       setDimensions({ width: 0, height: 0 })
       const repost = searchParams.get('repost')
-      const parentId = searchParams.get('parentId')
+      const parentId = parentIdProp || searchParams.get('parentId')
       const res = await addPost(
         formData,
         type,

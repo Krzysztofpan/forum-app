@@ -14,10 +14,13 @@ import { BiRepost } from 'react-icons/bi'
 import { PostWithDetails } from '@/types'
 import RepostedPost from './post/RepostedPost'
 
+import HashtagHighlighter from './HashtagHighlighter'
+
 const PostComponent = ({ post }: { post: PostWithDetails }) => {
   const timeAgo = formatPostTime(post.createdAt)
 
   const originalPost = !post.desc ? post.rePost || post : post
+
   return (
     <PostContainer
       href={`/${originalPost.user.username}/status/${originalPost.id}`}
@@ -72,7 +75,8 @@ const PostComponent = ({ post }: { post: PostWithDetails }) => {
           </div>
         </div>
         <div className="space-y-2 ">
-          <p className="text-wrap  break-words">{originalPost.desc}</p>
+          <HashtagHighlighter text={originalPost.desc as string} />
+
           {originalPost.media && <MediaPost media={originalPost.media} />}
         </div>
         {post.rePostId && post.rePost ? (

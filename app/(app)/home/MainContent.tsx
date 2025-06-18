@@ -57,11 +57,10 @@ const MainContent = async () => {
       },
       ...postIncludeQuery,
     },
-    take: 10,
+    take: 9,
     skip: 0,
     orderBy: { createdAt: 'desc' },
   })
-  /* console.log(posts[0]) */
 
   return (
     <div>

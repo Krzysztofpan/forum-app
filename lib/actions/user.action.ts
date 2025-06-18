@@ -17,8 +17,8 @@ export const followUser = async (targetUserId: string, username: string) => {
 
   const existingFollow = await prisma.follow.findFirst({
     where: {
-      followerId: userId,
-      followingId: targetUserId,
+      followerId: targetUserId,
+      followingId: userId,
     },
   })
 
@@ -31,8 +31,8 @@ export const followUser = async (targetUserId: string, username: string) => {
   } else {
     await prisma.follow.create({
       data: {
-        followerId: userId,
-        followingId: targetUserId,
+        followerId: targetUserId,
+        followingId: userId,
       },
     })
   }

@@ -1,3 +1,5 @@
+import { Fragment } from 'react'
+
 const createImage = (url: string) =>
   new Promise((resolve, reject) => {
     const image = new Image()
@@ -39,4 +41,30 @@ export async function getCroppedImg(
       resolve(blob)
     }, 'image/jpeg')
   })
+}
+
+export const formatDisplayPostDesc = (text: string) => {
+  if (text.split('\n').length >= 2) {
+    const arr = text.split('\n').map((el) => {
+      if (!el.startsWith('#')) {
+        return ' ' + el
+      }
+      return (
+        <span key={el} className="text-blue-500">
+          {' '}
+          {el}
+        </span>
+      )
+    })
+
+    return <Fragment key={text}>{arr.map((el) => el)}</Fragment>
+  }
+  if (!text.startsWith('#')) return text
+
+  return (
+    <span key={text} className="text-blue-500">
+      {' '}
+      {text}
+    </span>
+  )
 }

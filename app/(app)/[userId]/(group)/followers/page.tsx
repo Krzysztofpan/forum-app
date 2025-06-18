@@ -16,7 +16,7 @@ const FollowersPage = async ({
       followers: {
         include: {
           following: {
-            select: { displayName: true, username: true, id: true },
+            select: { displayName: true, username: true, id: true, img: true },
           },
         },
       },
@@ -36,12 +36,18 @@ const FollowersPage = async ({
     <div className="">
       {user.followers.map(
         (follow: {
-          following: { username: string; displayName: string; id: string }
+          following: {
+            username: string
+            displayName: string
+            id: string
+            img: string | null
+          }
         }) => (
           <div className="p-4 r" key={follow.following.id}>
             <UserView
               username={follow.following.username}
               userDisplayName={follow.following.displayName}
+              userAvatar={follow.following.img || ''}
             />
           </div>
         )

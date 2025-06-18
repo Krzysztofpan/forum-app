@@ -17,6 +17,7 @@ import Image from 'next/image'
 
 import { Post } from '@/types'
 import { prisma } from '@/prisma'
+import HashtagHighlighter from '../HashtagHighlighter'
 
 const PostView = async ({ post }: { post: Post }) => {
   const session = await auth()
@@ -57,8 +58,8 @@ const PostView = async ({ post }: { post: Post }) => {
           userId={userId}
           userAvatar={post.user.img || '/logo-sm.png'}
         />
-        <p className="my-4 text-lg">{post.desc}</p>
-
+        {/*  <p className="my-4 text-lg">{post.desc}</p> */}
+        <HashtagHighlighter text={post.desc as string} />
         {post.media[0] ? (
           post.media.length > 1 ? (
             <MediaPost media={post.media} />
@@ -102,6 +103,7 @@ const PostView = async ({ post }: { post: Post }) => {
         <AddPostComponent
           type="comment"
           placeholder="Post your reply"
+          parentIdProp={post.id}
           avatar={user.img || '/logo-sm.png'}
         />
       </div>

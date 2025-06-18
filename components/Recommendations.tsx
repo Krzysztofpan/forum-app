@@ -34,7 +34,7 @@ const Recommendations = async () => {
           <div className=" flex items-center gap-2">
             <div className="relative  h-10 w-10 rounded-full overflow-hidden">
               <Image
-                src={person.img || 'general/avatar.png'}
+                src={person.img || '/general/avatar.png'}
                 alt={person.username}
                 fill
               />

@@ -1,12 +1,15 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 import { prisma } from '@/prisma'
 
 // Obsługa metody GET
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
 ) {
+  const searchParams = request.nextUrl.searchParams
+
+  const withReplies = searchParams.get('r')
   try {
     const userId = (await params).userId
 
@@ -17,7 +20,7 @@ export async function GET(
         followers: { where: { followerId: userId } },
         followings: { where: { followingId: userId } },
         posts: {
-          where: { parentPostId: null },
+          where: withReplies ? {} : { parentPostId: null },
           include: {
             user: {},
             likes: {},
@@ -33,6 +36,11 @@ export async function GET(
                 _count: { select: { likes: true, rePosts: true } },
               },
             },
+          },
+
+          take: 9,
+          orderBy: {
+            createdAt: 'desc',
           },
         },
       },

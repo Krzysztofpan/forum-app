@@ -8,32 +8,23 @@ export async function GET(request: NextRequest) {
 
   const userProfileId = searchParams.get('user')
   const page = searchParams.get('cursor')
-
+  const r = searchParams.get('r')
   const LIMIT = 3
   const session = await auth()
 
   if (!session || !session.user) return
   const userId = session.user.id
   const whereCondition =
-    userProfileId !== 'undefined'
-      ? { parentPostId: null, userId: userProfileId as string }
+    userProfileId !== 'undefined' && userProfileId !== null
+      ? { parentPostId: r ? undefined : null, userId: userProfileId }
       : {
           parentPostId: null,
-          /* userId: {
-            in: [
-              userId,
-              ...(
-                await prisma.follow.findMany({
-                  where: { followerId: userId },
-                  select: { followingId: true },
-                })
-              ).map((follow) => follow.followingId),
-            ],
-          }, */
         }
 
   const postIncludeQuery = {
-    user: { select: { displayName: true, username: true, img: true } },
+    user: {
+      select: { displayName: true, username: true, img: true },
+    },
     _count: { select: { likes: true, rePosts: true, comments: true } },
     likes: { where: { userId: userId }, select: { id: true } },
     rePosts: { where: { userId: userId }, select: { id: true } },
@@ -45,13 +36,16 @@ export async function GET(request: NextRequest) {
     skip: (Number(page) - 1) * LIMIT,
     include: {
       rePost: {
-        include: postIncludeQuery,
+        include: {
+          ...postIncludeQuery,
+          media: {},
+        },
       },
       ...postIncludeQuery,
+      media: {},
     },
+    orderBy: { createdAt: 'desc' },
   })
-
-  console.log(posts)
 
   const totalPosts = await prisma.post.count({ where: whereCondition })
 

@@ -1,3 +1,4 @@
+import InfiniteFeed, { fetchPosts } from '@/components/home/InfiniteFeed'
 import PostComponent from '@/components/PostComponent'
 
 import { PostWithDetails } from '@/types'
@@ -24,6 +25,7 @@ const UserPage = async ({
       {user.posts.map((post: PostWithDetails) => (
         <PostComponent key={String(post.id)} post={post} />
       ))}
+      <InfiniteFeed fetchFnc={fetchPosts} params={[`${user.id}`]} />
     </>
   )
 }

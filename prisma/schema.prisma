@@ -36,11 +36,12 @@ model Post {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  desc     String?   @db.VarChar(255)
+  desc String? @db.Text
   media Media[]
  
   //RELATIONS
   user User @relation(fields:[userId],references: [id])
+
   userId String
 
   view Int @default(0)
@@ -51,16 +52,33 @@ model Post {
 
 
   
+  hashtags PostHashtag[] 
 
   parentPostId Int?
   parentPost Post? @relation("PostComments",fields:[parentPostId],references: [id])
   comments Post[] @relation("PostComments")
 
-
+/*   hashtags PostHashtag[]  */
   likes Like[]
  saves SavedPosts[]
 }
 
+
+
+model Hashtag {
+  id    Int       @id @default(autoincrement())
+  name  String    @unique
+  posts PostHashtag[] 
+}
+model PostHashtag {
+  id     Int   @id @default(autoincrement())
+  post   Post  @relation(fields: [postId], references: [id])
+  postId Int
+  tag    Hashtag  @relation(fields: [tagId], references: [id])
+  tagId  Int
+
+  @@unique([postId, tagId]) 
+}
 model Media {
   id Int @id @default(autoincrement())
   url String

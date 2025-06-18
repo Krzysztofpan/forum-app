@@ -1,7 +1,22 @@
+import { prisma } from '@/prisma'
 import Image from 'next/image'
 import Link from 'next/link'
 
-const PopularTags = () => {
+const PopularTags = async () => {
+  const topHashtags = await prisma.hashtag.findMany({
+    include: {
+      _count: {
+        select: { posts: true },
+      },
+    },
+    orderBy: {
+      posts: {
+        _count: 'desc',
+      },
+    },
+    take: 3,
+  })
+
   return (
     <div className="p-4 rounded-2xl border-[1px] border-borderGray flex flex-col gap-4">
       <h1 className="text-xl font-bold text-textGrayLight">
@@ -9,44 +24,18 @@ const PopularTags = () => {
       </h1>
 
       {/* TOPICS */}
-      <div>
-        <div className="flex items-center justify-between">
-          <span className="text-textGray text-sm font-semibold">
-            Technology Trending
+      {topHashtags.map((hashtag) => (
+        <Link href={`/hashtag/${hashtag.name.split('#')[1]}`} key={hashtag.id}>
+          <h2 className="text-textGrayLight font-bold">{hashtag.name}</h2>
+          <span className="text-sm text-textGray">
+            {hashtag._count.posts} posts
           </span>
-          <Image src="icons/infoMore.svg" alt="info" width={16} height={16} />
-        </div>
+        </Link>
+      ))}
 
-        <h2 className="text-textGrayLight font-bold">OpenAI</h2>
-        <span className="text-sm text-textGray">20K posts</span>
-      </div>
-      {/* TOPICS */}
-      <div>
-        <div className="flex items-center justify-between">
-          <span className="text-textGray text-sm font-semibold">
-            Technology Trending
-          </span>
-          <Image src="icons/infoMore.svg" alt="info" width={16} height={16} />
-        </div>
-
-        <h2 className="text-textGrayLight font-bold">OpenAI</h2>
-        <span className="text-sm text-textGray">20K posts</span>
-      </div>
-      {/* TOPICS */}
-      <div>
-        <div className="flex items-center justify-between">
-          <span className="text-textGray text-sm font-semibold">
-            Technology Trending
-          </span>
-          <Image src="icons/infoMore.svg" alt="info" width={16} height={16} />
-        </div>
-
-        <h2 className="text-textGrayLight font-bold">OpenAI</h2>
-        <span className="text-sm text-textGray">20K posts</span>
-      </div>
-      <Link href="/" className="text-iconBlue">
+      {/*   <Link href="/" className="text-iconBlue">
         Show More
-      </Link>
+      </Link> */}
     </div>
   )
 }

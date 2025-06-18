@@ -4,7 +4,7 @@ import MainContent from './MainContent'
 import { auth } from '@/auth'
 
 import { prisma } from '@/prisma'
-import InfiniteFeed from '@/components/home/InfiniteFeed'
+import InfiniteFeed, { fetchPosts } from '@/components/home/InfiniteFeed'
 import { Suspense } from 'react'
 import Spinner from '@/components/Spinner'
 
@@ -28,7 +28,7 @@ const MainApp = async () => {
       >
         <MainContent />
       </Suspense>
-      <InfiniteFeed />
+      <InfiniteFeed initialPage={4} fetchFnc={fetchPosts} />
     </div>
   )
 }
