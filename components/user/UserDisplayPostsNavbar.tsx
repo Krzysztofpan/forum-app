@@ -39,7 +39,7 @@ const UserDisplayPostsNavbar = ({ userId }: { userId: string }) => {
         variant="ghost"
         asChild
       >
-        <Link href={`/${userId}/media`}>Media</Link>
+        <Link href={`/${userId}/media`}>Mediagg</Link>
       </Button>
     </div>
   )
