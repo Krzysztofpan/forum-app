@@ -6,48 +6,53 @@ type UserSummary = {
   img: string | null
 }
 
+export type MediaType = {
+  id: number
+  userId: string
+  postId: number
+  url: string
+  type: string | null
+  width: number
+  height: number
+  public_id: string | null
+}
+
 type Engagement = {
   _count: { likes: number; rePosts: number; comments: number }
   likes: { id: number }[]
   rePosts: { id: number }[]
   saves: { id: number }[]
-}
-
-export type PostWithDetails = PostType & {
-  id: number
-  user: UserSummary
-  rePost?:
-    | (PostType &
-        Engagement & { user: UserSummary } & {
-          media: {
-            id: number
-            userId: string
-            postId: number
-            url: string
-            type: string | null
-            width: number
-            height: number
-            public_id: string | null
-          }[]
-        })
-    | null
-
-  media: {
+  comments: {
     id: number
+    createdAt: Date
+    updatedAt: Date
+    desc: string | null
     userId: string
-    postId: number
-    url: string
-    type: string | null
-    width: number
-    height: number
-    public_id: string | null
+    view: number
+    rePostId: number | null
+    parentPostId: number | null
   }[]
-  _count: { likes: number; rePosts: number; comments: number }
-  likes: { id: number }[]
-  rePosts: { id: number }[]
-  saves: { id: number }[]
-  view: number
 }
+
+export type PostWithDetails = PostType &
+  Engagement & {
+    id: number
+    user: UserSummary
+    rePost?:
+      | (PostType &
+          Engagement & { user: UserSummary } & {
+            media: MediaType[]
+          })
+      | null
+    parentPost?:
+      | (PostType &
+          Engagement & { user: UserSummary } & {
+            media: MediaType[]
+          })
+      | null
+
+    media: MediaType[]
+  }
 
 export type Post = PostType & {
   id: number
@@ -59,31 +64,24 @@ export type Post = PostType & {
     likes: { id: number }[]
     rePosts: { id: number }[]
     saves: { id: number }[]
-    media: {
-      id: number
-      width: number
-      height: number
-      url: string
-      public_id: string | null
-      type: string | null
-      userId: string
-      postId: number
-    }[]
+    media: MediaType[]
   } | null
-  media: {
+  parentPost: {
     id: number
-    userId: string
-    postId: number
-    url: string
-    type: string | null
-    width: number
-    height: number
-    public_id: string | null
-  }[]
+    user: UserSummary
+    _count: { likes: number; rePosts: number; comments: number }
+    likes: { id: number }[]
+    rePosts: { id: number }[]
+    saves: { id: number }[]
+    media: MediaType[]
+    parentPostId: number
+  } | null
+  media: MediaType[]
   _count: { likes: number; rePosts: number; comments: number }
   likes: { id: number }[]
   rePosts: { id: number }[]
   saves: { id: number }[]
   view: number
   comments: PostWithDetails[]
+  parentPostId: number
 }

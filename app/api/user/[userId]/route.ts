@@ -26,14 +26,28 @@ export async function GET(
             likes: {},
             rePosts: {},
             saves: {},
-            _count: { select: { likes: true, rePosts: true } },
+
+            _count: { select: { likes: true, rePosts: true, comments: true } },
             rePost: {
               include: {
                 user: {},
                 likes: {},
                 rePosts: {},
                 saves: {},
-                _count: { select: { likes: true, rePosts: true } },
+                _count: {
+                  select: { likes: true, rePosts: true, comments: true },
+                },
+              },
+            },
+            parentPost: {
+              include: {
+                user: {},
+                likes: {},
+                rePosts: {},
+                saves: {},
+                _count: {
+                  select: { likes: true, rePosts: true, comments: true },
+                },
               },
             },
           },

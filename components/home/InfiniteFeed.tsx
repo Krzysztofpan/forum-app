@@ -69,9 +69,9 @@ const InfiniteFeed = ({
       loader={<h1>Posts are loading...</h1>}
       endMessage={<h1>All posts loaded!</h1>}
     >
-      {allPosts.map((post) => (
-        <PostComponent key={post.id} post={post} />
-      ))}
+      {allPosts.map((post) => {
+        return <PostComponent withParent key={post.id} post={post} />
+      })}
     </InfiniteScroll>
   )
 }

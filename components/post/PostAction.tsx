@@ -96,9 +96,10 @@ const PostAction = ({
   )
 
   return (
-    <div className="flex justify-between text-foreground/50 items-end">
+    <div className="flex justify-between text-foreground/50 items-center">
       <Link
         className="flex items-center cursor-pointer hover:text-blue-500 group"
+        scroll={false}
         href={`/compose/post?parentId=${postId}`}
         onClick={(e) => {
           e.stopPropagation()
@@ -122,7 +123,7 @@ const PostAction = ({
           <BiRepost /> {optimisticCount.rePosts}
         </PopoverTrigger>
         <PopoverContent
-          className="w-[114px] p-0 bg-background shadow-md shadow-foreground"
+          className="w-[114px] p-0 bg-background shadow-md shadow-foreground z-[10000]"
           align="end"
           side="bottom"
           sideOffset={-20}

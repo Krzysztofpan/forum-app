@@ -1,3 +1,6 @@
+import { prisma } from '@/prisma'
+import { Post, PostWithDetails } from '@/types'
+
 import { Fragment } from 'react'
 
 const createImage = (url: string) =>

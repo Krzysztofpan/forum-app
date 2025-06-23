@@ -55,8 +55,14 @@ const MainContent = async () => {
       rePost: {
         include: postIncludeQuery,
       },
+      parentPost: {
+        include: {
+          ...postIncludeQuery,
+        },
+      },
       ...postIncludeQuery,
     },
+
     take: 9,
     skip: 0,
     orderBy: { createdAt: 'desc' },

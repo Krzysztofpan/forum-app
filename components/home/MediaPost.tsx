@@ -2,9 +2,12 @@
 import 'next-cloudinary/dist/cld-video-player.css'
 import { CldImage, CldVideoPlayer } from 'next-cloudinary'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const MediaPost = ({
   media,
+  username,
+  postId,
 }: {
   media: {
     url: string
@@ -13,6 +16,8 @@ const MediaPost = ({
     public_id: string | null
     type: string | null
   }[]
+  username?: string
+  postId?: number
 }) => {
   return (
     <div
@@ -35,8 +40,13 @@ const MediaPost = ({
             mediaObj.url.includes('/image')
           ) {
             return (
-              <div
-                className={` relative  ${
+              <Link
+                scroll={false}
+                href={`/${username}/status/${postId}/photos?photoId=${i + 1}`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                }}
+                className={`block relative  ${
                   media.length > 3
                     ? 'aspect-[1.78]'
                     : media.length > 2 && media.length < 4
@@ -72,11 +82,16 @@ const MediaPost = ({
                       : `${media.length > 1 ? 'object-cover w-full  ' : ''}`
                   } `}
                 />
-              </div>
+              </Link>
             )
           } else if (mediaObj.url.includes('media.tenor.com')) {
             return (
-              <div key={mediaObj.url} className="object-contain">
+              <Link
+                scroll={false}
+                href={`/${username}/status/${postId}/photos?photoId=${i + 1}`}
+                key={mediaObj.url}
+                className="block object-contain"
+              >
                 <Image
                   src={mediaObj.url}
                   id={mediaObj.url}
@@ -89,7 +104,7 @@ const MediaPost = ({
                     mediaObj.width >= mediaObj.height ? 'w-full' : 'h-[510px]'
                   }`}
                 />
-              </div>
+              </Link>
             )
           } else {
             return (
@@ -99,6 +114,9 @@ const MediaPost = ({
                 key={mediaObj.url}
                 style={{
                   aspectRatio: `${mediaObj.width}/${mediaObj.height}`,
+                }}
+                onClick={(e) => {
+                  e.stopPropagation()
                 }}
               >
                 <CldVideoPlayer

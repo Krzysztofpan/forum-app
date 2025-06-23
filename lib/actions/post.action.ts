@@ -8,6 +8,7 @@ import { UploadApiResponse } from 'cloudinary'
 import { revalidatePath } from 'next/cache'
 
 import { prisma } from '@/prisma'
+import { PostWithDetails } from '@/types'
 function isFileType(obj: FileType | GifType): obj is FileType {
   return obj.type !== 'gif'
 }
@@ -67,6 +68,7 @@ export const addPost = async (
         height: res.height,
         url: res.secure_url,
         public_id: res.public_id,
+        type: res.resource_type,
       }
 
       return convertedObj
@@ -86,6 +88,7 @@ export const addPost = async (
                 url: m.url,
                 width: m.width,
                 height: m.height,
+                type: m.type,
                 userId: session.user.id,
               }
 
@@ -93,7 +96,6 @@ export const addPost = async (
                 return {
                   ...baseData,
                   public_id: m.public_id,
-                  type: 'media',
                 }
               }
 
@@ -211,4 +213,102 @@ export const rePost = async (postId: number) => {
       },
     })
   }
+}
+
+export async function getParentPosts(
+  post: PostWithDetails,
+  userId: string
+): Promise<PostWithDetails[]> {
+  const parentPosts: PostWithDetails[] = []
+  let currentParent = post.parentPost
+  while (currentParent) {
+    // Tworzymy kopię bez parentPost, by nie zagnieżdżać
+    const { parentPost, ...flatParent } = currentParent
+    parentPosts.unshift(flatParent as PostWithDetails)
+    if (!currentParent.parentPostId) break
+    currentParent = await prisma.post.findUnique({
+      where: { id: currentParent.parentPostId },
+      include: {
+        user: { select: { displayName: true, username: true, img: true } },
+        _count: { select: { likes: true, rePosts: true, comments: true } },
+        likes: { where: { userId: userId }, select: { id: true } },
+        rePosts: { where: { userId: userId }, select: { id: true } },
+        saves: { where: { userId: userId }, select: { id: true } },
+        media: {
+          select: {
+            id: true,
+            width: true,
+            height: true,
+            url: true,
+            public_id: true,
+            type: true,
+            userId: true,
+            postId: true,
+          },
+        },
+        parentPost: {
+          include: {
+            user: { select: { displayName: true, username: true, img: true } },
+            _count: { select: { likes: true, rePosts: true, comments: true } },
+            likes: { where: { userId: userId }, select: { id: true } },
+            rePosts: { where: { userId: userId }, select: { id: true } },
+            saves: { where: { userId: userId }, select: { id: true } },
+            media: {
+              select: {
+                id: true,
+                width: true,
+                height: true,
+                url: true,
+                public_id: true,
+                type: true,
+                userId: true,
+                postId: true,
+              },
+            },
+          },
+        }, // pobierz referencję do kolejnego parentPost
+      }, // jak wcześniej
+    })
+  }
+
+  return parentPosts
+}
+
+export async function getRootPostWithDistance(
+  post: PostWithDetails,
+  userId: string
+): Promise<{ post: PostWithDetails | null; distance: number }> {
+  let currentPost = post
+  let distance = 0
+
+  while (currentPost.parentPostId) {
+    const parent = await prisma.post.findUnique({
+      where: { id: currentPost.parentPostId },
+      include: {
+        user: { select: { displayName: true, username: true, img: true } },
+        _count: { select: { likes: true, rePosts: true, comments: true } },
+        likes: { where: { userId: userId }, select: { id: true } },
+        rePosts: { where: { userId: userId }, select: { id: true } },
+        saves: { where: { userId: userId }, select: { id: true } },
+        media: {
+          select: {
+            id: true,
+            width: true,
+            height: true,
+            url: true,
+            public_id: true,
+            type: true,
+            userId: true,
+            postId: true,
+          },
+        },
+        parentPost: false,
+      },
+    })
+    if (!parent) break
+    currentPost = parent as PostWithDetails
+    distance += 1
+  }
+
+  return { post: currentPost, distance }
 }

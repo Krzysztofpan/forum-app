@@ -1,5 +1,7 @@
+import { auth } from '@/auth'
 import InfiniteFeed, { fetchPosts } from '@/components/home/InfiniteFeed'
 import PostComponent from '@/components/PostComponent'
+import { getRootPostWithDistance } from '@/lib/actions/post.action'
 
 import { PostWithDetails } from '@/types'
 
@@ -9,6 +11,9 @@ const PostWithRepliesPage = async ({
   params: Promise<{ userId: string }>
 }) => {
   const userId = (await params).userId
+  const session = await auth()
+
+  if (!session || !session.user) return
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/${userId}?r='y'`,
     {}
@@ -19,12 +24,29 @@ const PostWithRepliesPage = async ({
     return <p>User nie znaleziony</p>
   }
   const user = await res.json()
-  const posts = user.posts
+  let posts = user.posts
+
   return (
     <>
-      {posts.map((post: PostWithDetails) => (
-        <PostComponent key={String(post.id)} post={post} />
-      ))}
+      {posts.map(async (post: PostWithDetails, i: number) => {
+        if (post.parentPost?.parentPostId) {
+          const rootPost = (await getRootPostWithDistance(
+            post.parentPost,
+            session.user.id
+          )) as { post: PostWithDetails; distance: number }
+
+          return (
+            <PostComponent
+              withParent
+              key={String(post.id)}
+              post={post}
+              rootPostWithDistance={rootPost}
+            />
+          )
+        }
+
+        return <PostComponent withParent key={String(post.id)} post={post} />
+      })}
       <InfiniteFeed fetchFnc={fetchPosts} params={[`${user.id}`, 'y']} />
     </>
   )

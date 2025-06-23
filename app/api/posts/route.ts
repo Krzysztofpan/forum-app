@@ -41,6 +41,12 @@ export async function GET(request: NextRequest) {
           media: {},
         },
       },
+      parentPost: {
+        include: {
+          ...postIncludeQuery,
+          media: {},
+        },
+      },
       ...postIncludeQuery,
       media: {},
     },

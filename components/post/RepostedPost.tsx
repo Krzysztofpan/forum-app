@@ -4,7 +4,7 @@ import { formatPostTime } from '@/lib/utils/customPostDate'
 import { Dot } from 'lucide-react'
 import MediaPost from '../home/MediaPost'
 import { FileType } from '../home/AddPostComponent'
-import { PostWithDetails } from '@/types'
+import { Post, PostWithDetails } from '@/types'
 
 const RepostedPost = ({
   repostPost,
