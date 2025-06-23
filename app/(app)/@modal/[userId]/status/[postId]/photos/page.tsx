@@ -1,13 +1,14 @@
 import { auth } from '@/auth'
-import AddPostComponent from '@/components/home/AddPostComponent'
+
 import PostView from '@/components/post/PostView'
-import UserView from '@/components/user/UserView'
+
 import { AddPostContextProvider } from '@/context/AddPostContext'
 import { prisma } from '@/prisma'
 
 import { redirect } from 'next/navigation'
 
 import PhotoView from './PhotoView'
+import { PostWithDetails } from '@/types'
 
 const PhotoPage = async ({
   params,
@@ -34,7 +35,7 @@ const PhotoPage = async ({
       },
     },
   }
-  const post = await prisma.post.findFirst({
+  const post = (await prisma.post.findFirst({
     where: { id: Number(postId) },
     include: {
       rePost: {
@@ -54,9 +55,8 @@ const PhotoPage = async ({
         },
       },
       ...postIncludeQuery,
-      comments: { include: { ...postIncludeQuery } },
     },
-  })
+  })) as PostWithDetails
 
   if (!post || !post.media) return redirect(`/${userIdParam}/status/${postId}`)
 

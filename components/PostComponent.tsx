@@ -23,7 +23,7 @@ const PostComponent = ({
   withChildren = false,
   rootPostWithDistance,
 }: {
-  post: PostWithDetails
+  post: Omit<PostWithDetails, 'comments'>
   withParent?: boolean
   withChildren?: boolean
 

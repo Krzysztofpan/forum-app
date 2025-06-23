@@ -13,13 +13,6 @@ function isFileType(obj: FileType | GifType): obj is FileType {
   return obj.type !== 'gif'
 }
 
-type MediaType = {
-  width: number
-  height: number
-  url: string
-  public_id: string
-}
-
 export const addPost = async (
   formData: FormData,
   type: string,
@@ -218,13 +211,13 @@ export const rePost = async (postId: number) => {
 export async function getParentPosts(
   post: PostWithDetails,
   userId: string
-): Promise<PostWithDetails[]> {
-  const parentPosts: PostWithDetails[] = []
+): Promise<Omit<PostWithDetails, 'comments'>[]> {
+  const parentPosts: Omit<PostWithDetails, 'comments'>[] = []
   let currentParent = post.parentPost
   while (currentParent) {
     // Tworzymy kopię bez parentPost, by nie zagnieżdżać
     const { parentPost, ...flatParent } = currentParent
-    parentPosts.unshift(flatParent as PostWithDetails)
+    parentPosts.unshift(flatParent as Omit<PostWithDetails, 'comments'>)
     if (!currentParent.parentPostId) break
     currentParent = await prisma.post.findUnique({
       where: { id: currentParent.parentPostId },
@@ -246,6 +239,7 @@ export async function getParentPosts(
             postId: true,
           },
         },
+
         parentPost: {
           include: {
             user: { select: { displayName: true, username: true, img: true } },

@@ -26,11 +26,9 @@ import Image from 'next/image'
 const PostView = async ({
   post,
   withoutMedia = false,
-  classes,
 }: {
   post: PostWithDetails
   withoutMedia?: boolean
-  classes?: string
 }) => {
   const session = await auth()
   if (!session || !session.user) return
@@ -126,9 +124,10 @@ const PostView = async ({
         </div>
 
         <div>
-          {post.comments.map((post) => (
-            <PostComponent key={String(post.id)} post={post} />
-          ))}
+          {post.comments &&
+            post.comments.map((post) => (
+              <PostComponent key={String(post.id)} post={post} />
+            ))}
         </div>
       </div>
       <ScrollByHeight containerId="post-scroll-wrapper" />

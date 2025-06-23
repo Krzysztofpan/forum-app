@@ -22,7 +22,13 @@ type Engagement = {
   likes: { id: number }[]
   rePosts: { id: number }[]
   saves: { id: number }[]
-  comments: {
+  comments?: {
+    user: UserSummary
+    media: MediaType[]
+    _count: { likes: number; rePosts: number; comments: number }
+    likes: { id: number }[]
+    rePosts: { id: number }[]
+    saves: { id: number }[]
     id: number
     createdAt: Date
     updatedAt: Date
@@ -44,10 +50,17 @@ export type PostWithDetails = PostType &
             media: MediaType[]
           })
       | null
+
     parentPost?:
       | (PostType &
           Engagement & { user: UserSummary } & {
             media: MediaType[]
+            parentPost?:
+              | (PostType &
+                  Engagement & { user: UserSummary } & {
+                    media: MediaType[]
+                  })
+              | null
           })
       | null
 
