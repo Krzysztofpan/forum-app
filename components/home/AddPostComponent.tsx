@@ -1,5 +1,5 @@
 'use client'
-import { CgProfile } from 'react-icons/cg'
+
 import { Textarea } from '../ui/textarea'
 import { Image as ImageEmoji, Smile } from 'lucide-react'
 import { MdOutlineGifBox } from 'react-icons/md'

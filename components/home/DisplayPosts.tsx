@@ -3,21 +3,8 @@ import { useState } from 'react'
 import { Button } from '../ui/button'
 import useScroll from '@/hooks/useScroll'
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@/components/ui/sidebar'
 import Image from 'next/image'
-import { ResponsiveSidebar } from '../ResponsiveSidebar'
-import { redirect } from 'next/navigation'
+
 const DisplayPosts = ({ avatar }: { avatar: string | null }) => {
   const [displayPosts, setDisplayPosts] = useState<'For you' | 'Following'>(
     'For you'

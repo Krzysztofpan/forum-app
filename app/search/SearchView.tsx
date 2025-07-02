@@ -4,7 +4,7 @@ import InfiniteFeed, { fetchWithSearch } from '@/components/home/InfiniteFeed'
 import PostComponent from '@/components/PostComponent'
 import UserView from '@/components/user/UserView'
 import { prisma } from '@/prisma'
-import { CldVideoPlayer } from 'next-cloudinary'
+
 import Image from 'next/image'
 
 import Link from 'next/link'

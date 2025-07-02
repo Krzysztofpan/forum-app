@@ -4,7 +4,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import PostComponent from '../PostComponent'
 import { MediaType, PostWithDetails } from '@/types'
-import Image from 'next/image'
+
 export const fetchPosts = async (
   pageParam: number,
   userProfileId?: string,
