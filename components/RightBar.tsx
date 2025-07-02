@@ -2,9 +2,6 @@ import Link from 'next/link'
 import PopularTags from './PopularTags'
 import Recommendations from './Recommendations'
 
-import SearchInputWithTanStackQuery from '@/components/SearchInputWithTanstack'
-import { headers } from 'next/headers'
-import SearchRightBar from '@/app/(app)/search/SearchRightBar'
 import RightLayout from './RightLayout'
 
 const RightBar = async () => {
