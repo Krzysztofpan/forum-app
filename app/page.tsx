@@ -1,5 +1,42 @@
 import Navbar from '@/components/Navbar'
-
+export const metadata = {
+  title: 'Welcome to Cube – Your Gateway to Connection and Growth',
+  description:
+    'Discover why Cube was created – a platform designed to connect people, share knowledge, and grow communities. Join us today by registering or logging in to start your journey!',
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_BASE_URL}`,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    title: 'Welcome to Cube – Your Gateway to Connection and Growth',
+    description:
+      'Learn about Cube’s mission and how we help you connect and grow. Ready to join? Register or log in now!',
+    url: `${process.env.NEXT_PUBLIC_BASE_URL}`,
+    siteName: 'Cube',
+    type: 'website',
+    images: [
+      {
+        url: `${process.env.LOGO_URL}`,
+        width: 630,
+        height: 630,
+        alt: 'Cube homepage preview',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Welcome to Cube – Your Gateway to Connection and Growth',
+    description:
+      'Discover Cube’s purpose and join our community. Register or log in to get started!',
+    images: [`${process.env.LOGO_URL}`],
+    site: '@CubeOfficial', // podmień na swoje konto Twitter jeśli masz
+  },
+  viewport: 'width=device-width, initial-scale=1',
+  lang: 'en',
+}
 export default async function Home() {
   return (
     <div className="relative h-[200vh] ">

@@ -1,8 +1,10 @@
+'use client'
 import { FaCircleUser } from 'react-icons/fa6'
 
 import UserFollow from './UserFollow'
-import Link from 'next/link'
+
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 const UserView = ({
   username,
@@ -19,9 +21,15 @@ const UserView = ({
   userAvatar?: string
   vertical?: boolean
 }) => {
+  const router = useRouter()
   return (
-    <div className="grid grid-cols-[40px_1fr] gap-4">
-      <Link href={`/${username}`}>
+    <div className="grid grid-cols-[40px_1fr] gap-4  cursor-pointer">
+      <div
+        onClick={(e) => {
+          e.stopPropagation()
+          router.push(`/${username}`)
+        }}
+      >
         {userAvatar ? (
           <Image
             src={userAvatar}
@@ -33,19 +41,29 @@ const UserView = ({
         ) : (
           <FaCircleUser size={40} />
         )}
-      </Link>
+      </div>
       <div className={`flex justify-between`}>
         <div
           className={`flex ${
             vertical ? 'flex-row gap-2' : 'flex-col'
           }  justify-start `}
         >
-          <Link href={`/${username}`}>
+          <div
+            onClick={(e) => {
+              e.stopPropagation()
+              router.push(`/${username}`)
+            }}
+          >
             <p className="font-bold truncate  ">{userDisplayName}</p>
-          </Link>
-          <Link href={`/${username}`}>
+          </div>
+          <div
+            onClick={(e) => {
+              e.stopPropagation()
+              router.push(`/${username}`)
+            }}
+          >
             <p className="text-foreground/50 truncate ">@{username}</p>
-          </Link>
+          </div>
         </div>
         {!isFollowed && userId && (
           <UserFollow

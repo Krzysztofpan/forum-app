@@ -3,7 +3,8 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import PostComponent from '../PostComponent'
-import { PostWithDetails } from '@/types'
+import { MediaType, PostWithDetails } from '@/types'
+import Image from 'next/image'
 export const fetchPosts = async (
   pageParam: number,
   userProfileId?: string,
@@ -27,17 +28,33 @@ export const fetchHashtagPosts = async (
   return res.json()
 }
 
+export const fetchWithSearch = async (
+  pageParam: number,
+  query: string,
+  f?: string,
+  pf?: string
+) => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/withSearch?cursor=${pageParam}&q=${query}&f=${f}&pf=${pf}`
+  )
+
+  return res.json()
+}
+
 type FetchFncType = (
   pageParam: number,
+
   ...params: string[]
-) => Promise<{ posts: PostWithDetails[]; hasMore: boolean }>
+) => Promise<{ posts: (PostWithDetails | MediaType)[]; hasMore: boolean }>
 
 const InfiniteFeed = ({
   fetchFnc,
+
   params = [],
   initialPage,
 }: {
   fetchFnc: FetchFncType
+  displayMedia?: boolean
   params?: string[]
   initialPage?: number
 }) => {
@@ -70,6 +87,7 @@ const InfiniteFeed = ({
       endMessage={<h1>All posts loaded!</h1>}
     >
       {allPosts.map((post) => {
+        post = post as PostWithDetails
         return <PostComponent withParent key={post.id} post={post} />
       })}
     </InfiniteScroll>

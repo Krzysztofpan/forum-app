@@ -26,11 +26,11 @@ const HomeNavbar = ({ user }: { user: User }) => {
   const isScrolled = useScroll()
   return (
     <nav
-      className={`flex bg-background pb-1 border-t-[1px] xs:pt-2 xs:pb-8 xs:h-screen xs:flex-col justify-between z-50 sm:z-10 ${
+      className={`flex  bg-background sm:bg-transparent pb-1 border-t-[1px] xs:pt-2 xs:pb-8 xs:h-screen xs:flex-col justify-between z-50 sm:z-10 ${
         isScrolled ? 'opacity-30 xs:opacity-100' : ''
       }`}
     >
-      <div className="flex  w-full justify-between xs:flex-col sm:gap-4 text-lg items-end xxl:items-start  xs:px-2">
+      <div className="flex  w-full justify-between xs:flex-col gap-4 text-lg items-center sm:items-end xxl:items-start  xs:px-2 ">
         <div className="group hidden xs:block w-full cursor-pointer">
           <Link
             href="/home"
@@ -61,7 +61,9 @@ const HomeNavbar = ({ user }: { user: User }) => {
             }   justify-end xxl:justify-start`}
           >
             <Search
-              className={` ${path === '/explore' ? 'stroke-[3] ' : null}`}
+              className={` ${
+                path === '/explore' ? 'stroke-[3] ' : null
+              } sm:scale-100 scale-80`}
             />
             <span className="hidden xxl:inline">Explore</span>
           </Link>

@@ -1,6 +1,6 @@
 import { Post as PostType } from '@prisma/client'
 
-type UserSummary = {
+export type UserSummary = {
   displayName: string | null
   username: string
   img: string | null

@@ -3,6 +3,8 @@ import { prisma } from '@/prisma'
 
 import { NextResponse } from 'next/server'
 
+// func auth only work here in this way
+
 export const GET = auth(
   async (
     { auth },
@@ -10,12 +12,12 @@ export const GET = auth(
     { params }: { params: Promise<{ postId: number }> }
   ) => {
     const { postId } = await params
-    /* 
-    if (!session || !session.user) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
-    } */
 
     const userId = auth?.user.id
+
+    if (userId) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
 
     const postIdNumber = Number(postId)
     if (isNaN(postIdNumber) || postIdNumber <= 0) {
@@ -47,7 +49,7 @@ export const GET = auth(
         return NextResponse.json({ message: 'Post not found' }, { status: 404 })
       }
 
-      return NextResponse.json({ ...post })
+      return NextResponse.json({ ...post }, { status: 200 })
     } catch (error) {
       console.error(error)
       return NextResponse.json({ message: 'Server error' }, { status: 500 })

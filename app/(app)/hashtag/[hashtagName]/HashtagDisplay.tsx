@@ -1,6 +1,9 @@
 import { auth } from '@/auth'
+import CloudinaryPlayerContainer from '@/components/CloudinaryPlayerContainer'
+import InfiniteFeed, { fetchHashtagPosts } from '@/components/home/InfiniteFeed'
 import PostComponent from '@/components/PostComponent'
 import { prisma } from '@/prisma'
+import Image from 'next/image'
 
 const HashtagDisplay = async ({
   hashtag,
@@ -21,6 +24,33 @@ const HashtagDisplay = async ({
     saves: { where: { userId: userId }, select: { id: true } },
     media: { where: {} },
   }
+  // if f equals to media this component only want to display images
+  if (f === 'media') {
+    const media = await prisma.media.findMany({
+      where: { post: { hashtags: { some: { tag: { name: `#${hashtag}` } } } } },
+    })
+
+    return (
+      <div className="grid grid-cols-3 gap-1 m-1">
+        {media.map((mediaObj) => {
+          if (mediaObj.type === 'video') {
+            return (
+              <div className="relative aspect-square" key={mediaObj.id}>
+                <CloudinaryPlayerContainer url={mediaObj.url} />
+              </div>
+            )
+          }
+
+          return (
+            <div className="relative aspect-square" key={mediaObj.id}>
+              <Image src={mediaObj.url} alt={mediaObj.url} fill />
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
   const postWithHash = await prisma.hashtag.findFirst({
     where: { name: `#${hashtag}` },
     include: {
@@ -32,7 +62,11 @@ const HashtagDisplay = async ({
                   createdAt: 'desc',
                 },
               }
-            : {},
+            : {
+                post: {
+                  view: 'desc',
+                },
+              },
         include: {
           post: {
             include: {
@@ -55,6 +89,11 @@ const HashtagDisplay = async ({
       {postWithHash.posts.map((post) => (
         <PostComponent key={post.post.id} post={post.post} />
       ))}
+      <InfiniteFeed
+        initialPage={4}
+        fetchFnc={fetchHashtagPosts}
+        params={[hashtag, f]}
+      />
     </>
   )
 }

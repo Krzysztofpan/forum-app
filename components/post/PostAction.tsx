@@ -113,14 +113,17 @@ const PostAction = ({
 
       <Popover>
         <PopoverTrigger
-          className={`flex gap-1 items-center ${
+          className={`flex group items-center cursor-pointer hover:text-green-500 ${
             optimisticCount.isRePosted ? 'text-green-500' : ''
           }`}
           onClick={(e) => {
             e.stopPropagation()
           }}
         >
-          <BiRepost /> {optimisticCount.rePosts}
+          <span className="p-2 group-hover:bg-green-500/20 rounded-full">
+            <BiRepost className=" " />{' '}
+          </span>
+          {optimisticCount.rePosts}
         </PopoverTrigger>
         <PopoverContent
           className="w-[114px] p-0 bg-background shadow-md shadow-foreground z-[10000]"
@@ -150,7 +153,7 @@ const PostAction = ({
       </Popover>
 
       <span
-        className={`flex gap-1 items-center hover:text-red-400 ${
+        className={`group flex items-center cursor-pointer hover:text-red-400  ${
           optimisticCount.isLiked ? 'text-red-500' : ''
         }`}
         onClick={(e) => {
@@ -158,7 +161,9 @@ const PostAction = ({
           e.stopPropagation()
         }}
       >
-        {optimisticCount.isLiked ? <FaHeart /> : <FaRegHeart />}
+        <span className="group-hover:bg-red-500/30 rounded-full  p-2">
+          {optimisticCount.isLiked ? <FaHeart /> : <FaRegHeart />}
+        </span>
         {optimisticCount.likes}
       </span>
 
