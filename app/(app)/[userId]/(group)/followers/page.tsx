@@ -23,7 +23,7 @@ export async function generateMetadata({
     openGraph: {
       title: `People following ${user?.displayName} (@${user.username}) | Cube`,
       description: `Discover all the people who follow @${username} on Cube.`,
-      url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/user/${username}/followers`,
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/user/${username}/followers`,
       images: [
         {
           url: process.env.LOGO_URL,
@@ -41,7 +41,7 @@ export async function generateMetadata({
       images: [process.env.LOGO_URL],
     },
     alternates: {
-      canonical: `https://${process.env.NEXT_PUBLIC_BASE_URL}/${user.username}/followers`,
+      canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/${user.username}/followers`,
     },
 
     // Meta tag robots – pozwala na indeksowanie i śledzenie linków

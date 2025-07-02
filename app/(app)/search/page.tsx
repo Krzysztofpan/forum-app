@@ -54,7 +54,6 @@ export async function generateMetadata({
       title,
       description,
       images: `${process.env.LOGO_URL}`,
-      site: '@CubeOfficial', // podmień jeśli masz inne konto
     },
     viewport: 'width=device-width, initial-scale=1',
     lang: 'en',

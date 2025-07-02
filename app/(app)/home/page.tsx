@@ -9,7 +9,7 @@ export const metadata = {
 
   // Canonical URL – zapobiega problemom z duplikacją treści
   alternates: {
-    canonical: `https://${process.env.NEXT_PUBLIC_BASE_URL}/home`,
+    canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/home`,
   },
 
   // Meta tag robots – pozwala na indeksowanie i śledzenie linków
@@ -23,7 +23,7 @@ export const metadata = {
     title: 'Home / Cube',
     description:
       'Discover the latest articles, updates, and expert insights on Cube. Your go-to source for valuable content and personalized recommendations.',
-    url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/home`,
+    url: `${process.env.NEXT_PUBLIC_BASE_URL}/home`,
     siteName: 'Cube',
     type: 'website',
     images: [
