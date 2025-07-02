@@ -14,7 +14,7 @@ const SearchLayout = async ({
   modal,
 }: {
   children: ReactNode
-  modal: ReactNode
+  modal?: ReactNode
 }) => {
   const session = await auth()
 
