@@ -1,13 +1,15 @@
 import Link from 'next/link'
 import PopularTags from './PopularTags'
 import Recommendations from './Recommendations'
-import Search from './Search'
-import SearchInputWithTanStackQuery from '@/components/SearchInputWithTanstack'
 
-const RightBar = () => {
+import SearchInputWithTanStackQuery from '@/components/SearchInputWithTanstack'
+import { headers } from 'next/headers'
+import SearchRightBar from '@/app/(app)/search/SearchRightBar'
+import RightLayout from './RightLayout'
+
+const RightBar = async () => {
   return (
-    <div className="pt-4 flex flex-col gap-4 sticky top-0 h-max">
-      <SearchInputWithTanStackQuery />
+    <RightLayout>
       <Recommendations />
       <PopularTags />
       <div className="text-textGray text-sm flex gap-x-4 flex-wrap ">
@@ -19,7 +21,7 @@ const RightBar = () => {
 
         <span>&copy; 2025 L Corp.</span>
       </div>
-    </div>
+    </RightLayout>
   )
 }
 
