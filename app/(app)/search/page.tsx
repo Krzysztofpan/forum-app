@@ -42,7 +42,7 @@ export async function generateMetadata({
       type: 'website',
       images: [
         {
-          url: `${process.env.LOGO_URL}`,
+          url: `${process.env.NEXT_PUBLIC_BASE_URL}/logo-sm.png`,
           width: 630,
           height: 630,
           alt: `Search results preview for "${query}"`,
@@ -53,7 +53,7 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title,
       description,
-      images: `${process.env.LOGO_URL}`,
+      images: [`${process.env.NEXT_PUBLIC_BASE_URL}/logo-sm.png`],
     },
     viewport: 'width=device-width, initial-scale=1',
     lang: 'en',

@@ -28,7 +28,7 @@ export const metadata = {
     type: 'website',
     images: [
       {
-        url: process.env.LOGO_URL,
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/logo-sm.png`,
         width: 630,
         height: 630,
         alt: 'Cube Homepage Preview',
@@ -42,9 +42,7 @@ export const metadata = {
     title: 'Home / Cube',
     description:
       'Explore Cube’s homepage with the latest articles, updates, and expert insights. Stay informed and engaged!',
-    images: [process.env.LOGO_URL],
-    site: '@kudi7676', // jeśli masz konto Twitter
-    creator: '@kudi7676',
+    images: [`${process.env.NEXT_PUBLIC_BASE_URL}/logo-sm.png`],
   },
 
   viewport: 'width=device-width, initial-scale=1',

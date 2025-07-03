@@ -26,7 +26,7 @@ export async function generateMetadata({
       url: `${process.env.NEXT_PUBLIC_BASE_URL}/user/${username}/followers`,
       images: [
         {
-          url: process.env.LOGO_URL,
+          url: `${process.env.NEXT_PUBLIC_BASE_URL}/logo-sm.png`,
           width: 630,
           height: 630,
           alt: 'Followers preview',
@@ -38,7 +38,7 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title: `Followers of @${username} | Cube`,
       description: `Check out everyone who follows @${username} on Cube.`,
-      images: [process.env.LOGO_URL],
+      images: [`${process.env.NEXT_PUBLIC_BASE_URL}/logo-sm.png`],
     },
     alternates: {
       canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/${user.username}/followers`,
