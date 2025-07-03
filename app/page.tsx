@@ -19,7 +19,7 @@ export const metadata = {
     type: 'website',
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/public/logo-sm.png`,
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/logo-sm.png`,
         width: 630,
         height: 630,
         alt: 'Cube homepage preview',
@@ -31,8 +31,7 @@ export const metadata = {
     title: 'Welcome to Cube – Your Gateway to Connection and Growth',
     description:
       'Discover Cube’s purpose and join our community. Register or log in to get started!',
-    images: [`${process.env.NEXT_PUBLIC_BASE_URL}/public/logo-sm.png`],
-    site: '@CubeOfficial', // podmień na swoje konto Twitter jeśli masz
+    images: [`${process.env.NEXT_PUBLIC_BASE_URL}/logo-sm.png`],
   },
   viewport: 'width=device-width, initial-scale=1',
   lang: 'en',
