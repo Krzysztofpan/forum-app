@@ -80,7 +80,10 @@ const SearchPage = async ({
           <Ellipsis size={20} />
         </div>
       </BackComponent>
-      <SearchNavbar path={`search`} searchParam={`q=${q}`} />
+      <SearchNavbar
+        path={`search`}
+        searchParam={`q=${encodeURIComponent(q)}`}
+      />
       <main className="">
         <Suspense
           fallback={

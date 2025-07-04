@@ -114,7 +114,7 @@ const SearchView = async ({
         ? {
             createdAt: 'desc',
           }
-        : {},
+        : { view: 'desc' },
     take: 9,
   })
 

@@ -1,12 +1,12 @@
 'use client'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import React from 'react'
 
 const HashtagHighlighter = ({ text }: { text: string }) => {
   const regex = /(\s|^)(#[a-zA-Z0-9_]+)/g
-  const params = useParams()
-  const hashtagParam = params.hashtagName
+  const searchParams = useSearchParams()
+  const hashtagParam = searchParams.get('q')
   const elements = []
   let lastIndex = 0
 
@@ -15,10 +15,10 @@ const HashtagHighlighter = ({ text }: { text: string }) => {
 
     elements.push(
       <Link
-        href={`/hashtag/${hashtag.split('#')[1]}`}
+        href={`/search?q=${encodeURIComponent(hashtag)}`}
         key={offset}
         className={`text-blue-500 hover:underline ${
-          hashtag.split('#')[1] === hashtagParam ? 'font-bold' : ''
+          hashtag === hashtagParam ? 'font-bold' : ''
         }`}
         onClick={(e) => {
           e.stopPropagation()

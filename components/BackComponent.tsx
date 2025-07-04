@@ -8,7 +8,7 @@ import { ArrowLeft } from 'lucide-react'
 const BackComponent = ({ children }: { children: ReactNode }) => {
   const router = useRouter()
   return (
-    <div className="grid grid-cols-[60px_1fr] py-1 mx-2">
+    <div className="grid grid-cols-[60px_1fr] py-1 mx-2 items-center">
       <div className="flex items-center justify-start">
         <Button
           onClick={() => router.back()}

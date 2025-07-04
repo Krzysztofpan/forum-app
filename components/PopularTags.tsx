@@ -25,7 +25,10 @@ const PopularTags = async () => {
 
       {/* TOPICS */}
       {topHashtags.map((hashtag) => (
-        <Link href={`/hashtag/${hashtag.name.split('#')[1]}`} key={hashtag.id}>
+        <Link
+          href={`/search?q=${encodeURIComponent(hashtag.name)}`}
+          key={hashtag.id}
+        >
           <h2 className="text-textGrayLight font-bold">{hashtag.name}</h2>
           <span className="text-sm text-textGray">
             {hashtag._count.posts} posts

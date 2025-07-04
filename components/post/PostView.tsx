@@ -51,85 +51,88 @@ const PostView = async ({
           parentPosts ? 'mt-3' : ''
         }`}
       >
+        {/* All parent posts are here to measure scroll height */}
         <PostScrollWrapper comments={parentPosts} />
-        <div className="mx-5 space-y-4">
-          <UserView
-            username={post.user.username}
-            userDisplayName={post.user.displayName || post.user.username}
-            isFollowed={true}
-            userId={userId}
-            userAvatar={post.user.img || '/logo-sm.png'}
-          />
-          {/*  <p className="my-4 text-lg">{post.desc}</p> */}
-          <HashtagHighlighter text={post.desc as string} />
-          {post.media[0] && !withoutMedia ? (
-            post.media.length > 1 ? (
-              <MediaPost
-                media={post.media}
-                postId={post.id}
-                username={post.user.username}
-              />
-            ) : post.media[0].type === 'image' ||
-              post.media[0].type === 'gif' ? (
-              <Link
-                href={`/${post.user.username}/status/${post.id}/photos?photoId=1`}
-                className="w-full relative  rounded-lg overflow-hidden block"
-                style={{
-                  aspectRatio: post.media[0].width / post.media[0].height,
-                }}
-              >
-                <Image
-                  src={post.media[0].url}
-                  alt={`image-${post.media[0]?.public_id}`}
-                  fill
-                />
-              </Link>
-            ) : (
-              <MediaPost
-                media={post.media}
-                postId={post.id}
-                username={post.user.username}
-              />
-            )
-          ) : null}
-          {/*  {post.rePost ? (
-          <RepostedPost media={post.media} repostPost={post.rePost} />
-        ) : null} */}
-          <div></div>
-          <div className="flex text-foreground/50 gap-0">
-            {hour} <Dot className="p-0 m-0" /> {formattedDate} <Dot />{' '}
-            <span className="text-foreground font-bold">{post.view} </span>{' '}
-            Views
-          </div>
-          <div className="border-y-[1px] border-border p-3  ">
-            <PostAction
+        <div className="min-h-screen">
+          <div className="mx-5 space-y-4">
+            <UserView
               username={post.user.username}
-              view={post.view}
-              postId={post.id}
-              count={post._count}
-              isLiked={!!post.likes.length}
-              isRePosted={!!post.rePosts.length}
-              isSaved={!!post.saves.length}
-              /*  specialContent={<Upload size={20} />} */
+              userDisplayName={post.user.displayName || post.user.username}
+              isFollowed={true}
+              userId={userId}
+              userAvatar={post.user.img || '/logo-sm.png'}
+            />
+
+            <HashtagHighlighter text={post.desc as string} />
+            {post.media[0] && !withoutMedia ? (
+              post.media.length > 1 ? (
+                <MediaPost
+                  media={post.media}
+                  postId={post.id}
+                  username={post.user.username}
+                />
+              ) : post.media[0].type === 'image' ||
+                post.media[0].type === 'gif' ? (
+                <Link
+                  href={`/${post.user.username}/status/${post.id}/photos?photoId=1`}
+                  className="w-full relative  rounded-lg overflow-hidden block"
+                  style={{
+                    aspectRatio: post.media[0].width / post.media[0].height,
+                  }}
+                >
+                  <Image
+                    src={post.media[0].url}
+                    alt={`image-${post.media[0]?.public_id}`}
+                    fill
+                  />
+                </Link>
+              ) : (
+                <MediaPost
+                  media={post.media}
+                  postId={post.id}
+                  username={post.user.username}
+                />
+              )
+            ) : null}
+
+            <div></div>
+            <div className="flex text-foreground/50 gap-0">
+              {hour} <Dot className="p-0 m-0" /> {formattedDate} <Dot />{' '}
+              <span className="text-foreground font-bold">{post.view} </span>{' '}
+              Views
+            </div>
+            <div className="border-y-[1px] border-border p-3  ">
+              <PostAction
+                username={post.user.username}
+                view={post.view}
+                postId={post.id}
+                count={post._count}
+                isLiked={!!post.likes.length}
+                isRePosted={!!post.rePosts.length}
+                isSaved={!!post.saves.length}
+                /*  specialContent={<Upload size={20} />} */
+              />
+            </div>
+          </div>
+          <div className="border-b-[1px] border-border">
+            <AddPostComponent
+              type="comment"
+              placeholder="Post your reply"
+              parentIdProp={post.id}
+              avatar={post.user.img || '/logo-sm.png'}
             />
           </div>
-        </div>
-        <div className="border-b-[1px] border-border">
-          <AddPostComponent
-            type="comment"
-            placeholder="Post your reply"
-            parentIdProp={post.id}
-            avatar={post.user.img || '/logo-sm.png'}
-          />
-        </div>
 
-        <div>
-          {post.comments &&
-            post.comments.map((post) => (
-              <PostComponent key={String(post.id)} post={post} />
-            ))}
+          <div>
+            {post.comments &&
+              post.comments.map((post) => (
+                <PostComponent key={String(post.id)} post={post} />
+              ))}
+          </div>
         </div>
       </div>
+
+      {/* This component scroll window to level where display post is on the top of window (if post has parents, parents are default over window) */}
       <ScrollByHeight containerId="post-scroll-wrapper" />
     </>
   )

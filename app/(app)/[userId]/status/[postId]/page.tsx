@@ -38,7 +38,8 @@ export async function generateMetadata({
   const postUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/${post.user.username}/status/${post.id}`
 
   // Obraz do podglądu (jeśli post ma obrazek)
-  const imageUrl = post.media[0].url || `${process.env.LOGO_URL}`
+  const imageUrl =
+    post.media[0]?.url || `${`${process.env.NEXT_PUBLIC_BASE_URL}/logo-sm.png`}`
 
   return {
     title: `${post.user.displayName} on X: "${

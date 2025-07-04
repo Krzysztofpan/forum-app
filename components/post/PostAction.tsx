@@ -1,17 +1,17 @@
 'use client'
-import { likePost, rePost } from '@/lib/actions/post.action'
+import { likePost, rePost, savePost } from '@/lib/actions/post.action'
 
 import { useOptimistic, useState, useTransition } from 'react'
 
 import { BiRepost } from 'react-icons/bi'
 import { FaHeart, FaRegComment, FaRegHeart } from 'react-icons/fa6'
-import { IoStatsChart } from 'react-icons/io5'
+import { IoBookmarkSharp, IoStatsChart } from 'react-icons/io5'
 import { PiBookmarkSimple } from 'react-icons/pi'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { PenLine } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useModalOpen } from '@/context/ModalContext'
+import { toast } from 'sonner'
 
 const PostAction = ({
   postId,
@@ -64,6 +64,26 @@ const PostAction = ({
           isRePosted: !prev.isRePosted,
         }
       })
+    })
+  }
+
+  const savePostAction = () => {
+    startTransition(async () => {
+      addOptimisticCount('save')
+      const res = await savePost(postId)
+
+      if (res?.success) {
+        toast(res.message, {
+          position: 'bottom-center',
+          style: { backgroundColor: 'rgb(8, 104, 187)', color: 'white' },
+        })
+        setState((prev) => {
+          return {
+            ...prev,
+            isSaved: !prev.isSaved,
+          }
+        })
+      }
     })
   }
 
@@ -171,7 +191,19 @@ const PostAction = ({
         <IoStatsChart /> {view}
       </span>
 
-      <PiBookmarkSimple size={20} />
+      <span
+        onClick={(e) => {
+          savePostAction()
+          e.stopPropagation()
+        }}
+        className="rounded-full hover:bg-blue-400/50 p-1"
+      >
+        {optimisticCount.isSaved ? (
+          <IoBookmarkSharp size={20} className="text-blue-500" />
+        ) : (
+          <PiBookmarkSimple size={20} />
+        )}
+      </span>
       {/*   {specialContent} */}
     </div>
   )

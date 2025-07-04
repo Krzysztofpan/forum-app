@@ -6,9 +6,11 @@ const DataNotFoundInformation = ({
   info: string
 }) => {
   return (
-    <div className="text-center px-32 py-6">
-      <h1 className="font-bold text-3xl text-left ">{header}</h1>
-      <p className="text-foreground/50 mt-1">{info}</p>
+    <div className="flex flex-col  py-6 ">
+      <div className="mx-auto max-w-[336px]">
+        <h1 className="font-bold text-4xl text-left  ">{header}</h1>
+        <p className="text-foreground/50 mt-1 text-left  ">{info}</p>
+      </div>
     </div>
   )
 }

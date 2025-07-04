@@ -107,7 +107,7 @@ export const addPost = async (
       if (hashtags) {
         hashtags.forEach(async (hashtag) => {
           const hashtagExists = await prisma.hashtag.findFirst({
-            where: { name: hashtag },
+            where: { name: hashtag.trim() },
           })
           if (!hashtagExists) {
             const newHashtag = await prisma.hashtag.create({
@@ -206,6 +206,37 @@ export const rePost = async (postId: number) => {
       },
     })
   }
+}
+
+export const savePost = async (postId: number) => {
+  const session = await auth()
+
+  if (!session || !session.user) return
+  const userId = session.user.id
+
+  const existingSavedPost = await prisma.savedPosts.findFirst({
+    where: { AND: [{ postId }, { userId }] },
+  })
+
+  if (existingSavedPost) {
+    await prisma.savedPosts.delete({
+      where: {
+        id: existingSavedPost.id,
+      },
+    })
+
+    revalidatePath('/bookmarks')
+    return { success: true, message: 'Removed from your Bookmarks' }
+  }
+
+  await prisma.savedPosts.create({
+    data: {
+      postId,
+      userId,
+    },
+  })
+  revalidatePath('/bookmarks')
+  return { success: true, message: 'Added to your Bookmarks' }
 }
 
 export async function getParentPosts(

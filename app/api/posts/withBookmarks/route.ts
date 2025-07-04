@@ -7,10 +7,9 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
 
   const page = searchParams.get('cursor')
-  const f = searchParams.get('f')
+
   const query = searchParams.get('q')
-  const pf = searchParams.get('pf')
-  if (!query) return
+
   const LIMIT = 3
   const session = await auth()
 
@@ -25,47 +24,23 @@ export async function GET(request: NextRequest) {
     likes: { where: { userId: userId }, select: { id: true } },
     rePosts: { where: { userId: userId }, select: { id: true } },
     saves: { where: { userId: userId }, select: { id: true } },
+    media: {},
   }
-
   const whereCondition = {
-    AND: [
-      {
-        OR: [
-          { user: { username: { contains: query } } },
-          { desc: { contains: query } },
-        ],
-      },
-      { parentPostId: null },
-      pf ? { user: { followers: { some: { followingId: userId } } } } : {},
-    ],
+    AND: [{ userId }, { post: { desc: { contains: query || '' } } }],
   }
 
-  const posts = await prisma.post.findMany({
+  const savedPosts = await prisma.savedPosts.findMany({
     where: whereCondition,
-    take: LIMIT,
+    include: { post: { include: { ...postIncludeQuery } } },
+    orderBy: { createdAt: 'desc' },
+    take: 3,
     skip: (Number(page) - 1) * LIMIT,
-    include: {
-      rePost: {
-        include: {
-          ...postIncludeQuery,
-          media: {},
-        },
-      },
-
-      ...postIncludeQuery,
-      media: {},
-    },
-    orderBy:
-      f === 'live'
-        ? {
-            createdAt: 'desc',
-          }
-        : { view: 'desc' },
   })
 
-  const totalPosts = await prisma.post.count({ where: whereCondition })
+  const totalPosts = await prisma.savedPosts.count({ where: whereCondition })
 
   const hasMore = Number(page) * LIMIT < totalPosts
-
+  const posts = savedPosts.map((savedPosts) => savedPosts.post)
   return Response.json({ posts, hasMore })
 }
