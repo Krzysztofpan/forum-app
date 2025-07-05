@@ -1,5 +1,12 @@
+import Chat from '@/components/Chat'
+
 const NotificationsPage = () => {
-  return <>notifications</>
+  return (
+    <div>
+      notifications
+      <Chat />
+    </div>
+  )
 }
 
 export default NotificationsPage

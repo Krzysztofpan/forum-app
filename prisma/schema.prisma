@@ -31,6 +31,8 @@ model User {
    saves SavedPosts[]
    followers Follow[] @relation("UserFollowers")
    followings Follow[] @relation("UserFollowings")
+   notifications Notification[] @relation("UserNotifications")
+   actedNotifications Notification[] @relation("ActorNotifications")
 }
 model Post {
   id        Int      @id @default(autoincrement())
@@ -61,6 +63,7 @@ model Post {
 /*   hashtags PostHashtag[]  */
   likes Like[]
  saves SavedPosts[]
+ notifications Notification[]
 }
 
 
@@ -121,4 +124,32 @@ model Follow {
 
   follower User @relation("UserFollowers",fields: [followerId],references: [id])
   following User @relation("UserFollowings",fields: [followingId],references: [id])
+}
+
+enum NotificationType {
+  POST_LIKED
+  COMMENT_ADDED
+  POST_REPOSTED
+  NEW_FOLLOWER
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  read      Boolean  @default(false)
+
+
+  type      NotificationType
+
+
+  user      User     @relation("UserNotifications", fields: [userId], references: [id])
+  userId    String
+
+  actor     User?    @relation("ActorNotifications", fields: [actorId], references: [id])
+  actorId   String?
+
+  post      Post?    @relation(fields: [postId], references: [id])
+  postId    Int?
+
+  commentId Int? 
 }
