@@ -1,4 +1,5 @@
 import Navbar from '@/components/Navbar'
+
 export const metadata = {
   title: 'Welcome to Cube – Your Gateway to Connection and Growth',
   description:
@@ -38,10 +39,10 @@ export const metadata = {
 }
 export default async function Home() {
   return (
-    <div className="relative h-[200vh] ">
+    <div className="relative h-[100vh] ">
       <Navbar />
-      <div className="h-[70vh] bg-[url(/homepage-bg.jpg)] bg-cover bg-repeat-x animate-bg-move flex items-center justify-center shadow-xl shadow-foreground/10">
-        <h1 className="font-bold lg:text-7xl md:text-6xl sm:text-5xl text-4xl opacity-90  ">
+      <div className="h-[70vh] bg-[url('/homepage-bg.jpg')]   bg-cover bg-repeat-x animate-bg-move flex items-center justify-center shadow-xl shadow-foreground/10 ">
+        <h1 className="font-bold lg:text-7xl md:text-6xl sm:text-5xl text-4xl opacity-90">
           Welcome to my Forum
         </h1>
       </div>

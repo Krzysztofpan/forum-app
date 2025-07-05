@@ -26,6 +26,8 @@ const Recommendations = async () => {
     select: { id: true, displayName: true, username: true, img: true },
   })
 
+  if (!friendRecommendations.length) return null
+
   return (
     <div className="p-4 rounded-2xl border-[1px] border-borderGray flex flex-col gap-4">
       {friendRecommendations.map((person) => (
