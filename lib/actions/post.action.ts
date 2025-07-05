@@ -180,6 +180,7 @@ export const likePost = async (postId: number) => {
     return { success: false }
   }
 
+  revalidatePath('/')
   return { success: true }
 }
 export const rePost = async (postId: number) => {
@@ -187,24 +188,32 @@ export const rePost = async (postId: number) => {
 
   if (!session || !session.user) return
   const userId = session.user.id
-  const existingRePost = await prisma.post.findFirst({
-    where: {
-      userId: userId,
-      rePostId: postId,
-    },
-  })
-
-  if (existingRePost) {
-    await prisma.post.delete({
-      where: { id: existingRePost.id },
-    })
-  } else {
-    await prisma.post.create({
-      data: {
-        userId,
+  try {
+    const existingRePost = await prisma.post.findFirst({
+      where: {
+        userId: userId,
         rePostId: postId,
       },
     })
+
+    if (existingRePost) {
+      await prisma.post.delete({
+        where: { id: existingRePost.id },
+      })
+
+      return { success: true, message: 'deleted rePost' }
+    } else {
+      await prisma.post.create({
+        data: {
+          userId,
+          rePostId: postId,
+        },
+      })
+
+      return { success: false, message: 'post was rePosted.' }
+    }
+  } catch (error) {
+    return { success: false, message: 'Something went wrong, try again.' }
   }
 }
 
@@ -214,27 +223,32 @@ export const savePost = async (postId: number) => {
   if (!session || !session.user) return
   const userId = session.user.id
 
-  const existingSavedPost = await prisma.savedPosts.findFirst({
-    where: { AND: [{ postId }, { userId }] },
-  })
-
-  if (existingSavedPost) {
-    await prisma.savedPosts.delete({
-      where: {
-        id: existingSavedPost.id,
-      },
+  try {
+    const existingSavedPost = await prisma.savedPosts.findFirst({
+      where: { AND: [{ postId }, { userId }] },
     })
 
-    revalidatePath('/bookmarks')
-    return { success: true, message: 'Removed from your Bookmarks' }
+    if (existingSavedPost) {
+      await prisma.savedPosts.delete({
+        where: {
+          id: existingSavedPost.id,
+        },
+      })
+
+      revalidatePath('/bookmarks')
+      return { success: true, message: 'Removed from your Bookmarks' }
+    }
+
+    await prisma.savedPosts.create({
+      data: {
+        postId,
+        userId,
+      },
+    })
+  } catch (error) {
+    return { success: false, message: 'Something went wrong, try again.' }
   }
 
-  await prisma.savedPosts.create({
-    data: {
-      postId,
-      userId,
-    },
-  })
   revalidatePath('/bookmarks')
   return { success: true, message: 'Added to your Bookmarks' }
 }

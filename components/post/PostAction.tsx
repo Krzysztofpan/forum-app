@@ -1,8 +1,6 @@
 'use client'
 import { likePost, rePost, savePost } from '@/lib/actions/post.action'
-
-import { useOptimistic, useState, useTransition } from 'react'
-
+import { useOptimistic, useTransition } from 'react'
 import { BiRepost } from 'react-icons/bi'
 import { FaHeart, FaRegComment, FaRegHeart } from 'react-icons/fa6'
 import { IoBookmarkSharp, IoStatsChart } from 'react-icons/io5'
@@ -13,14 +11,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
-const PostAction = ({
-  postId,
-  count,
-  isLiked,
-  isRePosted,
-  isSaved,
-  view,
-}: {
+type PostActionProps = {
   username: string
   postId: number
   count: { rePosts: number; likes: number; comments: number }
@@ -28,67 +19,28 @@ const PostAction = ({
   isRePosted: boolean
   isSaved: boolean
   view: number
-}) => {
-  const [state, setState] = useState({
-    likes: count.likes,
-    isLiked: isLiked,
-    rePosts: count.rePosts,
-    isRePosted,
-    isSaved,
-  })
+}
 
+const PostAction = ({
+  postId,
+  count,
+  isLiked,
+  isRePosted,
+  isSaved,
+  view,
+}: PostActionProps) => {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
-  const likeAction = () => {
-    startTransition(async () => {
-      addOptimisticCount('like')
-      const res = await likePost(postId)
-      if (res?.success) {
-        setState({
-          ...state,
-          likes: state.isLiked ? state.likes - 1 : state.likes + 1,
-          isLiked: !state.isLiked,
-        })
-      }
-    })
-  }
 
-  const rePostAction = () => {
-    startTransition(async () => {
-      addOptimisticCount('rePost')
-      await rePost(postId)
-      setState((prev) => {
-        return {
-          ...prev,
-          rePosts: prev.isRePosted ? prev.rePosts - 1 : prev.rePosts + 1,
-          isRePosted: !prev.isRePosted,
-        }
-      })
-    })
-  }
-
-  const savePostAction = () => {
-    startTransition(async () => {
-      addOptimisticCount('save')
-      const res = await savePost(postId)
-
-      if (res?.success) {
-        toast(res.message, {
-          position: 'bottom-center',
-          style: { backgroundColor: 'rgb(8, 104, 187)', color: 'white' },
-        })
-        setState((prev) => {
-          return {
-            ...prev,
-            isSaved: !prev.isSaved,
-          }
-        })
-      }
-    })
-  }
-
+  // Stan zarządzany tylko przez useOptimistic
   const [optimisticCount, addOptimisticCount] = useOptimistic(
-    state,
+    {
+      likes: count.likes,
+      isLiked,
+      rePosts: count.rePosts,
+      isRePosted,
+      isSaved,
+    },
     (prev, type: 'like' | 'rePost' | 'save') => {
       if (type === 'like') {
         return {
@@ -110,10 +62,38 @@ const PostAction = ({
           isSaved: !prev.isSaved,
         }
       }
-
       return prev
     }
   )
+
+  const likeAction = () => {
+    startTransition(async () => {
+      addOptimisticCount('like')
+      await likePost(postId)
+      // Nie wywołuj setState!
+    })
+  }
+
+  const rePostAction = () => {
+    startTransition(async () => {
+      addOptimisticCount('rePost')
+      await rePost(postId)
+      // Nie wywołuj setState!
+    })
+  }
+
+  const savePostAction = () => {
+    startTransition(async () => {
+      addOptimisticCount('save')
+      const res = await savePost(postId)
+      if (res?.success) {
+        toast(res.message, {
+          position: 'bottom-center',
+          style: { backgroundColor: 'rgb(8, 104, 187)', color: 'white' },
+        })
+      }
+    })
+  }
 
   return (
     <div className="flex justify-between text-foreground/50 items-center">
@@ -125,9 +105,9 @@ const PostAction = ({
           e.stopPropagation()
         }}
       >
-        <span className="group-hover:bg-blue-500/30 rounded-full  p-2">
+        <span className="group-hover:bg-blue-500/30 rounded-full p-2">
           <FaRegComment />
-        </span>{' '}
+        </span>
         {count.comments}
       </Link>
 
@@ -141,7 +121,7 @@ const PostAction = ({
           }}
         >
           <span className="p-2 group-hover:bg-green-500/20 rounded-full">
-            <BiRepost className=" " />{' '}
+            <BiRepost />
           </span>
           {optimisticCount.rePosts}
         </PopoverTrigger>
@@ -156,16 +136,17 @@ const PostAction = ({
               e.stopPropagation()
               rePostAction()
             }}
-            className="px-4 py-3 text-center cursor-pointer grid grid-cols-[auto_auto]  text-base font-semibold items-center hover:bg-foreground/10"
+            className="px-4 py-3 text-center cursor-pointer grid grid-cols-[auto_auto] text-base font-semibold items-center hover:bg-foreground/10"
           >
-            <BiRepost size={20} /> {isRePosted ? 'undo repost' : 'Repost'}
+            <BiRepost size={20} />{' '}
+            {optimisticCount.isRePosted ? 'undo repost' : 'Repost'}
           </div>
           <Link
             href={`/compose/post?repost=${postId}`}
             onClick={(e) => {
               e.stopPropagation()
             }}
-            className="px-4 py-3 text-center cursor-pointer grid grid-cols-[auto_auto]  text-base font-semibold items-center hover:bg-foreground/10"
+            className="px-4 py-3 text-center cursor-pointer grid grid-cols-[auto_auto] text-base font-semibold items-center hover:bg-foreground/10"
           >
             <PenLine size={20} /> Quote
           </Link>
@@ -173,7 +154,7 @@ const PostAction = ({
       </Popover>
 
       <span
-        className={`group flex items-center cursor-pointer hover:text-red-400  ${
+        className={`group flex items-center cursor-pointer hover:text-red-400 ${
           optimisticCount.isLiked ? 'text-red-500' : ''
         }`}
         onClick={(e) => {
@@ -181,7 +162,7 @@ const PostAction = ({
           e.stopPropagation()
         }}
       >
-        <span className="group-hover:bg-red-500/30 rounded-full  p-2">
+        <span className="group-hover:bg-red-500/30 rounded-full p-2">
           {optimisticCount.isLiked ? <FaHeart /> : <FaRegHeart />}
         </span>
         {optimisticCount.likes}
@@ -204,7 +185,6 @@ const PostAction = ({
           <PiBookmarkSimple size={20} />
         )}
       </span>
-      {/*   {specialContent} */}
     </div>
   )
 }
