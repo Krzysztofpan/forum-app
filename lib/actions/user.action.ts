@@ -7,6 +7,8 @@ import cloudinary from '../cloudinary'
 import { UploadApiResponse } from 'cloudinary'
 
 import { prisma } from '@/prisma'
+import { createNotification } from '../notifications'
+import { pusherServer } from '../pusher-server'
 
 export const followUser = async (targetUserId: string, username: string) => {
   const session = await auth()
@@ -28,6 +30,7 @@ export const followUser = async (targetUserId: string, username: string) => {
         id: existingFollow.id,
       },
     })
+    return
   } else {
     await prisma.follow.create({
       data: {
@@ -35,6 +38,32 @@ export const followUser = async (targetUserId: string, username: string) => {
         followingId: userId,
       },
     })
+
+    const notificationExists = await prisma.notification.findFirst({
+      where: {
+        AND: [
+          { userId: targetUserId },
+          { type: 'NEW_FOLLOWER' },
+          { actorId: userId },
+        ],
+      },
+    })
+    if (!notificationExists) {
+      await createNotification({
+        userId: targetUserId,
+        actorId: userId,
+        type: 'NEW_FOLLOWER',
+      })
+
+      await pusherServer.trigger(
+        `private-user-${targetUserId}`,
+        'new-notification',
+        {
+          type: 'NEW_FOLLOWER',
+          actorId: userId,
+        }
+      )
+    }
   }
 
   revalidatePath(`/${username}`)

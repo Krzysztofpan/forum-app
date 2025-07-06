@@ -1,8 +1,5 @@
-
 generator client {
   provider = "prisma-client-js"
-
-
 }
 
 datasource db {
@@ -11,119 +8,122 @@ datasource db {
 }
 
 model User {
-  id      String   @id @default(cuid())
-  email   String   @unique
-  username   String   @unique
-  displayName   String   
-  password String 
-  bio String?
-  location String?
-  job String?
-  website String?
-  img String?
-  cover String?
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  email       String   @unique
+  username    String   @unique
+  displayName String
+  password    String
+  bio         String?
+  location    String?
+  job         String?
+  website     String?
+  img         String?
+  cover       String?
+  createdAt   DateTime @default(now())
 
   // RELATIONS
-  posts   Post[]
-  likes Like[]
-  media Media[]
-   saves SavedPosts[]
-   followers Follow[] @relation("UserFollowers")
-   followings Follow[] @relation("UserFollowings")
-   notifications Notification[] @relation("UserNotifications")
-   actedNotifications Notification[] @relation("ActorNotifications")
+  posts              Post[]
+  likes              Like[]
+  media              Media[]
+  saves              SavedPosts[]
+  followers          Follow[]       @relation("UserFollowers")
+  followings         Follow[]       @relation("UserFollowings")
+  notifications      Notification[] @relation("UserNotifications")
+  actedNotifications Notification[] @relation("ActorNotifications")
 }
+
 model Post {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  desc String? @db.Text
-  media Media[]
- 
+  desc      String?  @db.Text
+  media     Media[]
+
   //RELATIONS
-  user User @relation(fields:[userId],references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   userId String
 
   view Int @default(0)
 
   rePostId Int?
-  rePost Post? @relation("RePosts", fields: [rePostId], references: [id])
-  rePosts Post[] @relation("RePosts")
+  rePost   Post?  @relation("RePosts", fields: [rePostId], references: [id])
+  rePosts  Post[] @relation("RePosts")
 
-
-  
-  hashtags PostHashtag[] 
+  hashtags PostHashtag[]
 
   parentPostId Int?
-  parentPost Post? @relation("PostComments",fields:[parentPostId],references: [id])
-  comments Post[] @relation("PostComments")
+  parentPost   Post?  @relation("PostComments", fields: [parentPostId], references: [id])
+  comments     Post[] @relation("PostComments")
 
-/*   hashtags PostHashtag[]  */
-  likes Like[]
- saves SavedPosts[]
- notifications Notification[]
+  /**
+   * hashtags PostHashtag[]
+   */
+  likes         Like[]
+  saves         SavedPosts[]
+  notifications Notification[]
 }
-
-
 
 model Hashtag {
-  id    Int       @id @default(autoincrement())
-  name  String    @unique
-  posts PostHashtag[] 
+  id    Int           @id @default(autoincrement())
+  name  String        @unique
+  posts PostHashtag[]
 }
+
 model PostHashtag {
-  id     Int   @id @default(autoincrement())
-  post   Post  @relation(fields: [postId], references: [id])
+  id     Int     @id @default(autoincrement())
+  post   Post    @relation(fields: [postId], references: [id])
   postId Int
-  tag    Hashtag  @relation(fields: [tagId], references: [id])
+  tag    Hashtag @relation(fields: [tagId], references: [id])
   tagId  Int
 
-  @@unique([postId, tagId]) 
+  @@unique([postId, tagId])
 }
+
 model Media {
-  id Int @id @default(autoincrement())
-  url String
-  height Int
-  width Int
-  type String?
+  id        Int     @id @default(autoincrement())
+  url       String
+  height    Int
+  width     Int
+  type      String?
   public_id String?
-  userId String
-  postId Int
-  user User @relation(fields: [userId],references: [id])
-  post Post @relation(fields: [postId],references: [id])
+  userId    String
+  postId    Int
+  user      User    @relation(fields: [userId], references: [id])
+  post      Post    @relation(fields: [postId], references: [id])
 }
 
 model Like {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
   userId String
   postId Int
 
-  user User @relation(fields: [userId],references: [id])
-  post Post @relation(fields: [postId],references: [id])
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
 }
+
 model SavedPosts {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
   userId String
   postId Int
 
-  user User @relation(fields: [userId],references: [id])
-  post Post @relation(fields: [postId],references: [id])
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
 }
+
 model Follow {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
-  followerId String
+  followerId  String
   followingId String
 
-  follower User @relation("UserFollowers",fields: [followerId],references: [id])
-  following User @relation("UserFollowings",fields: [followingId],references: [id])
+  follower  User @relation("UserFollowers", fields: [followerId], references: [id])
+  following User @relation("UserFollowings", fields: [followingId], references: [id])
 }
 
 enum NotificationType {
@@ -138,18 +138,16 @@ model Notification {
   createdAt DateTime @default(now())
   read      Boolean  @default(false)
 
+  type NotificationType
 
-  type      NotificationType
+  user   User   @relation("UserNotifications", fields: [userId], references: [id])
+  userId String
 
+  actor   User?   @relation("ActorNotifications", fields: [actorId], references: [id])
+  actorId String?
 
-  user      User     @relation("UserNotifications", fields: [userId], references: [id])
-  userId    String
+  post   Post? @relation(fields: [postId], references: [id])
+  postId Int?
 
-  actor     User?    @relation("ActorNotifications", fields: [actorId], references: [id])
-  actorId   String?
-
-  post      Post?    @relation(fields: [postId], references: [id])
-  postId    Int?
-
-  commentId Int? 
+  commentId Int?
 }

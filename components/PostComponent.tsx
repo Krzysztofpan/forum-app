@@ -109,7 +109,7 @@ const PostComponent = ({
                 href={`/${originalPost.user.username}`}
                 className="font-bold text-foreground hover:underline  truncate"
               >
-                {originalPost.user.username}
+                {originalPost.user.displayName}
               </LinkWithoutPropagation>
               <LinkWithoutPropagation
                 href={`/${originalPost.user.username}`}
@@ -125,7 +125,7 @@ const PostComponent = ({
             </div>
           </div>
           <div className="space-y-2">
-            <HashtagHighlighter  text={originalPost.desc as string} />
+            <HashtagHighlighter text={originalPost.desc as string} />
 
             {originalPost.media && (
               <MediaPost

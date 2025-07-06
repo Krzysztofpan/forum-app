@@ -9,6 +9,8 @@ import { revalidatePath } from 'next/cache'
 
 import { prisma } from '@/prisma'
 import { PostWithDetails } from '@/types'
+import { createNotification } from '../notifications'
+import { pusherServer } from '../pusher-server'
 function isFileType(obj: FileType | GifType): obj is FileType {
   return obj.type !== 'gif'
 }
@@ -99,7 +101,39 @@ export const addPost = async (
             }),
           },
         },
+        include: {
+          user: { select: { displayName: true, username: true, img: true } },
+          _count: { select: { likes: true, rePosts: true, comments: true } },
+          likes: { where: { userId: session.user.id }, select: { id: true } },
+          rePosts: { where: { userId: session.user.id }, select: { id: true } },
+          saves: { where: { userId: session.user.id }, select: { id: true } },
+          media: { where: {} },
+        },
       })
+
+      if (parentPostId) {
+        const parentPost = await prisma.post.findFirst({
+          where: { id: Number(parentPostId) },
+        })
+
+        await createNotification({
+          userId: parentPost?.userId || '',
+          actorId: session.user.id,
+          type: 'COMMENT_ADDED',
+          postId: newPost.id,
+        })
+
+        await pusherServer.trigger(
+          `private-user-${parentPost?.userId || ''}`,
+          'new-notification',
+          {
+            type: 'COMMENT_ADDED',
+            actorId: session.user.id,
+            post: newPost,
+          }
+        )
+      }
+
       const hashtags = newPost.desc
         ?.split(' ')
         .filter((text) => text.includes('#'))
@@ -169,12 +203,35 @@ export const likePost = async (postId: number) => {
         where: { id: existingLike.id },
       })
     } else {
-      await prisma.like.create({
+      const newLike = await prisma.like.create({
         data: {
           userId,
           postId,
         },
+        include: { post: { include: { user: {} } }, user: {} },
       })
+      const notificationExists = await prisma.notification.findFirst({
+        where: { AND: [{ userId }, { type: 'POST_LIKED' }, { postId }] },
+      })
+
+      if (!notificationExists) {
+        await createNotification({
+          userId: newLike.post.user.id,
+          actorId: session.user.id,
+          type: 'POST_LIKED',
+          postId: postId,
+        })
+
+        await pusherServer.trigger(
+          `private-user-${newLike.post.user.id}`,
+          'new-notification',
+          {
+            type: 'POST_LIKED',
+            actorId: session.user.id,
+            actor: newLike.user,
+          }
+        )
+      }
     }
   } catch (error) {
     return { success: false }
@@ -200,15 +257,43 @@ export const rePost = async (postId: number) => {
       await prisma.post.delete({
         where: { id: existingRePost.id },
       })
-
+      revalidatePath('/')
       return { success: true, message: 'deleted rePost' }
     } else {
-      await prisma.post.create({
-        data: {
-          userId,
-          rePostId: postId,
-        },
-      })
+      try {
+        const newPost = await prisma.post.create({
+          data: {
+            userId,
+            rePostId: postId,
+          },
+          include: {
+            user: {},
+            rePost: {
+              include: { user: {} },
+            },
+          },
+        })
+
+        await createNotification({
+          userId: newPost.rePost?.userId || '',
+          actorId: session.user.id,
+          postId: newPost.id,
+          type: 'POST_REPOSTED',
+        })
+
+        await pusherServer.trigger(
+          `private-user-${newPost.rePost?.userId || ''}`,
+          'new-notification',
+          {
+            type: 'POST_REPOSTED',
+            actor: newPost.user,
+            post: newPost,
+          }
+        )
+        revalidatePath('/')
+      } catch (error) {
+        console.log(error)
+      }
 
       return { success: false, message: 'post was rePosted.' }
     }

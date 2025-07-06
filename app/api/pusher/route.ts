@@ -1,18 +1,12 @@
-import { pusherServer } from '@/lib/pusher-server'
-import { auth } from '@/auth' // next-auth
 import { NextResponse } from 'next/server'
+import { pusherServer } from '@/lib/pusher-server'
 
 export async function POST(req: Request) {
-  const session = await auth()
+  const { message } = await req.json()
 
-  if (!session?.user?.id) {
-    return new NextResponse('Unauthorized', { status: 401 })
-  }
+  await pusherServer.trigger('chat-channel', 'message-event', {
+    message,
+  })
 
-  const body = await req.json()
-  const { socket_id, channel_name } = body
-
-  const authResponse = pusherServer.authorizeChannel(socket_id, channel_name)
-
-  return NextResponse.json(authResponse)
+  return NextResponse.json({ success: true })
 }

@@ -1,10 +1,19 @@
-import Chat from '@/components/Chat'
+import { auth } from '@/auth'
 
-const NotificationsPage = () => {
+import NotificationBell from '@/components/NotificationBell'
+
+const NotificationsPage = async () => {
+  const session = await auth()
+
+  if (!session || !session.user) {
+    return null
+  }
+
+  const userId = session.user.id
+
   return (
     <div>
-      notifications
-      <Chat />
+      <NotificationBell userId={userId} />
     </div>
   )
 }
