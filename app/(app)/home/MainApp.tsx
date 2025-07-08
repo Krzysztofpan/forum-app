@@ -27,8 +27,8 @@ const MainApp = async () => {
         }
       >
         <MainContent />
+        <InfiniteFeed initialPage={4} fetchFnc={fetchPosts} />
       </Suspense>
-      <InfiniteFeed initialPage={4} fetchFnc={fetchPosts} />
     </div>
   )
 }

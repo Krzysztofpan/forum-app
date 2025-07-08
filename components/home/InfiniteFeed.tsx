@@ -104,7 +104,11 @@ const InfiniteFeed = ({
       dataLength={allPosts.length}
       next={fetchNextPage}
       hasMore={!!hasNextPage}
-      loader={<h1>Posts are loading...</h1>}
+      loader={
+        <div className="h-[50vh] flex items-center justify-center">
+          <Spinner />
+        </div>
+      }
       endMessage={<h1>All posts loaded!</h1>}
     >
       {allPosts.map((post) => {
