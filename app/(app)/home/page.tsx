@@ -7,18 +7,15 @@ export const metadata = {
   description:
     'Welcome to our homepage – your gateway to the latest articles, updates, and featured content. Discover valuable resources, expert insights, and personalized recommendations designed to keep you informed and engaged. Start exploring now!',
 
-  // Canonical URL – zapobiega problemom z duplikacją treści
   alternates: {
     canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/home`,
   },
 
-  // Meta tag robots – pozwala na indeksowanie i śledzenie linków
   robots: {
     index: true,
     follow: true,
   },
 
-  // Open Graph – dla lepszego udostępniania w mediach społecznościowych
   openGraph: {
     title: 'Home / Cube',
     description:
@@ -36,7 +33,6 @@ export const metadata = {
     ],
   },
 
-  // Twitter Card – optymalizacja pod Twittera
   twitter: {
     card: 'summary_large_image',
     title: 'Home / Cube',
