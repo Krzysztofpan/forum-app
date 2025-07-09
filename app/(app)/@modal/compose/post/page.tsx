@@ -25,27 +25,44 @@ const ModalPostCreate = async ({
 
   const repostId = (await searchParams).repost
   const parentId = (await searchParams).parentId
+  if (repostId || parentId) {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${repostId || parentId}`
+    )
+    if (!res.ok) {
+      return notFound()
+    }
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${repostId || parentId}`
-  )
-  if (!res.ok) {
-    return notFound()
+    const Post = await res.json()
+
+    return (
+      <AddPostContextProvider>
+        <Modal>
+          <DialogContent className=" p-0  max-h-[800px] overflow-y-auto overflow-x-hidden sm:max-w-[600px] md:min-w-[600px]">
+            <DialogTitle></DialogTitle>
+            <AddPostComponent
+              type={repostId ? 'quote' : 'comment'}
+              avatar={userAvatar?.img || '/logo.png'}
+              placeholder="Add a comment"
+              className="mx-0 w-full"
+              repostPost={repostId && Post}
+              parentPost={parentId && Post}
+            />
+          </DialogContent>
+        </Modal>
+      </AddPostContextProvider>
+    )
   }
-
-  const Post = await res.json()
   return (
     <AddPostContextProvider>
       <Modal>
-        <DialogContent className=" p-0  max-h-[800px] overflow-y-auto overflow-x-hidden sm:max-w-[600px] md:min-w-[600px]">
+        <DialogContent className="p-0  max-h-[800px] overflow-y-auto overflow-x-hidden sm:max-w-[600px] md:min-w-[600px]">
           <DialogTitle></DialogTitle>
           <AddPostComponent
-            type={repostId ? 'quote' : 'comment'}
+            type="post"
             avatar={userAvatar?.img || '/logo.png'}
-            placeholder="Add a comment"
             className="mx-0 w-full"
-            repostPost={repostId && Post}
-            parentPost={parentId && Post}
+            placeholder="Add a Post"
           />
         </DialogContent>
       </Modal>

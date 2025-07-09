@@ -119,10 +119,7 @@ const AddPostComponent = ({
         })
       }
 
-      if (
-        type === 'quote' ||
-        (type === 'comment' && pathname.includes('/compose/post'))
-      ) {
+      if (type === 'quote' || pathname.includes('/compose/post')) {
         return router.back()
       }
     }

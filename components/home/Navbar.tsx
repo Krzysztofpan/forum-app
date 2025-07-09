@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 
-import { Ellipsis, Search } from 'lucide-react'
+import { Ellipsis, Plus, Search } from 'lucide-react'
 import { FaRegUser, FaUser } from 'react-icons/fa6'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -114,11 +114,19 @@ const HomeNavbar = ({ user }: { user: User }) => {
             <span className="hidden xxl:inline">Bookmarks</span>
           </div>
         </Link>
-        {/*  <Link href={'/compose/post'}>
-        <Button className="hidden xxl:inline-flex w-full py-6 rounded-full text-lg mt-4 mb-8">
-          Post
-        </Button>
-      </Link> */}
+        <div className="flex  w-full items-center justify-center">
+          <Button
+            asChild
+            className="flex p-0 aspect-square xxl:w-full xxl:py-6 rounded-full text-lg mt-4 mb-8"
+          >
+            <Link href={'/compose/post'} className="xxl:w-full ">
+              <span className="hidden xxl:inline-flex">Post</span>
+              <span className="inline-flex xxl:hidden  aspect-square ">
+                <Plus />
+              </span>
+            </Link>
+          </Button>
+        </div>
       </div>
       <div className="hidden xs:block  xxl:grid xxl:grid-cols-[1fr_20px]">
         <div className="flex items-center justify-center xxl:grid xxl:grid-cols-[40px_190px] xxl:gap-3 ">
